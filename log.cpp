@@ -8,11 +8,11 @@
 void info(String msg)
 {
     if (Serial)
-        info(msg);
+        Serial.println(msg);
 
-    if (displayReady())
+    if (is_display_ready())
     {
-        queueText(msg);
+        display_text(msg);
         draw();
     }
 }

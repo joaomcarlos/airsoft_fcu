@@ -11,10 +11,11 @@
 extern int display_ready;
 extern Adafruit_SSD1306 display;
 
-int displayReady();
+int is_display_ready();
 void init_display();
-void queueText(String text, int size = 1, bool selected = false, int x = -1, int y = -1);
+void display_text(String text, int size = 1, bool selected = false, int x = -1, int y = -1);
 void clear();
+void clear_and_reset();
 void draw();
 
 #endif

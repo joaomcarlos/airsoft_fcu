@@ -6,7 +6,7 @@
 int display_ready = 0;
 Adafruit_SSD1306 display(128, 32, &Wire, -1);
 
-int displayReady()
+int is_display_ready()
 {
     return display_ready == 1;
 }
@@ -19,11 +19,11 @@ void init_display()
         delay(100);
     }
     display_ready = 1;
-    clear();
+    clear_and_reset();
     info("Conectado ao display!");
 }
 
-void queueText(String text, int size, bool selected, int x, int y)
+void display_text(String text, int size, bool selected, int x, int y)
 {
     display.cp437(true);
     display.setTextSize(size);
@@ -37,13 +37,18 @@ void queueText(String text, int size, bool selected, int x, int y)
     display.println(text.c_str());
 }
 
+void clear_and_reset()
+{
+    clear();
+    display.setTextSize(1);      // Normal 1:1 pixel scale
+    display.setTextColor(WHITE); // Draw white text
+    display.cp437(true);         // Use full 256 char 'Code Page 437' font
+}
+
 void clear()
 {
     display.clearDisplay();
-    display.setTextSize(1);      // Normal 1:1 pixel scale
-    display.setTextColor(WHITE); // Draw white text
-    display.setCursor(0, 0);     // Start at top-left corner
-    display.cp437(true);         // Use full 256 char 'Code Page 437' font
+    display.setCursor(0, 0); // Start at top-left corner
 }
 
 void draw()
