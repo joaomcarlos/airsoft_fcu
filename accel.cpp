@@ -21,6 +21,10 @@ void init_accelarometer()
     EEPROM.get(0, calibration);
 }
 
+#define ACCELAROMETER_ORIENTATION_HORIZONTAL 0
+#define ACCELAROMETER_ORIENTATION_VERTICAL 1
+#define ACCELAROMETER_ORIENTATION ACCELAROMETER_ORIENTATION_HORIZONTAL
+
 void update_accel()
 {
     int ax, ay, az;
@@ -30,17 +34,22 @@ void update_accel()
     accel.y = ay;
     accel.z = az;
 
-    double x_Buff = float(ax);
-    double y_Buff = float(ay);
-    double z_Buff = float(az);
+    double x_Buff = float(accel.x);
+    double y_Buff = float(accel.y);
+    double z_Buff = float(accel.z);
     accel.raw_pitch = atan2((-x_Buff), sqrt(y_Buff * y_Buff + z_Buff * z_Buff)) * 57.3;
     accel.raw_roll = atan2(y_Buff, z_Buff) * 57.3;
+
+#if (ACCELAROMETER_ORIENTATION == ACCELAROMETER_ORIENTATION_VERTICAL)
+    accel.raw_roll -= 90;
+#endif
 
     accel.pitch = accel.raw_pitch - calibration.pitch;
     accel.roll = accel.raw_roll - calibration.roll;
 }
 
-void calibrate(){
+void calibrate()
+{
     clear_and_reset();
     info("A calibrar...");
     delay(2000);
@@ -51,7 +60,8 @@ void calibrate(){
     delay(1500);
 }
 
-void reset_calibration(){
+void reset_calibration()
+{
     calibration = {0.00, 0.00};
     EEPROM.put(0, calibration);
 
