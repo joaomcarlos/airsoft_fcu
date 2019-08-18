@@ -70,4 +70,24 @@ void reset_calibration()
     delay(1500);
 }
 
+void display_accel()
+{
+  clear();
+  display_text("pitch:" + String(accel.pitch) + " roll:" + String(accel.roll));
+
+  int r = display.height() / 3;
+  int halfR = r / 2;
+  int posX = map(accel.roll, -45, 45, halfR, display.width() - halfR);
+  int posY = (display.height() / 2) + halfR;
+
+  // draw ball and line
+  display.drawCircle(posX, posY, r, WHITE);
+  display.drawFastVLine(posX, posY - halfR, r, WHITE);
+  display.drawFastHLine(posX - halfR, posY, r, WHITE);
+
+  // draw absolute center
+  display.drawFastVLine(display.width() / 2, 10, display.height(), WHITE);
+  draw();
+}
+
 #endif

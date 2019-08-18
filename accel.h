@@ -33,5 +33,6 @@ void init_accelarometer();
 void update_accel();
 void calibrate();
 void reset_calibration();
+void display_accel();
 
 #endif
