@@ -1,7 +1,7 @@
 #ifndef DISPLAY_SOURCE
 #define DISPLAY_SOURCE
 
-#include "display.h"
+#include "../include/display.h"
 
 int display_ready = 0;
 Adafruit_SSD1306 display(128, 32, &Wire, -1);

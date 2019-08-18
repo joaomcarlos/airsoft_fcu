@@ -3,11 +3,11 @@
 #include <EEPROM.h>
 #include <SparkFun_ADXL345.h>
 #include <Tasker.h>
-
-#include "log.h"
-#include "display.h"
-#include "accel.h"
-#include "menu.h"
+ 
+#include "include/log.h"
+#include "include/display.h"
+#include "include/accel.h"
+#include "include/menu.h"
 
 #define COUNT_OF(x) ((sizeof(x) / sizeof(0 [x])) / ((size_t)(!(sizeof(x) % sizeof(0 [x])))))
 
@@ -18,7 +18,11 @@ Tasker tasker;
 
 void setup()
 {
-  Serial.begin(9600);
+  //Serial.begin(9600);
+  tasker.setTimeout(post_setup, 500);
+}
+
+void post_setup(){
   init_display();
   init_accelarometer();
 

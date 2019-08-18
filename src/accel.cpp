@@ -1,9 +1,9 @@
 #ifndef ACCEL_SOURCE
 #define ACCEL_SOURCE
 
-#include "log.h"
-#include "display.h"
-#include "accel.h"
+#include "../include/log.h"
+#include "../include/display.h"
+#include "../include/accel.h"
 
 ADXL345 adxl;
 AccelCalibrationData calibration;

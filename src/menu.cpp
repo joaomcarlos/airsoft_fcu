@@ -1,8 +1,8 @@
 #ifndef _MENU_CPP_
 #define _MENU_CPP_
 
-#include "menu.h"
-#include "accel.h"
+#include "../include/menu.h"
+#include "../include/accel.h"
 
 #define back_opt "Back"
 #define prefix_opt "> "

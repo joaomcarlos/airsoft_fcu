@@ -2,8 +2,8 @@
 #define LOG_SOURCE
 
 #include <Arduino.h>
-#include "display.h"
-#include "log.h"
+#include "../include/display.h"
+#include "../include/log.h"
 
 void info(String msg)
 {
