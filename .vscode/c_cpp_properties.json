@@ -3,15 +3,32 @@
         {
             "name": "Linux",
             "includePath": [
-                "/home/joaoc/Arduino/libraries/Adafruit_SSD1306-master",
-                "/home/joaoc/Downloads/arduino-1.8.9/tools/**",
-                "/home/joaoc/Downloads/arduino-1.8.9/hardware/arduino/avr/**"
+                "${workspaceFolder}/libraries/**", 
+                "${workspaceFolder}/**"
             ],
             "forcedInclude": [
                 "/home/joaoc/Downloads/arduino-1.8.9/hardware/arduino/avr/cores/arduino/Arduino.h"
             ],
             "intelliSenseMode": "gcc-x64",
             "compilerPath": "/usr/bin/gcc",
+            "cStandard": "c11",
+            "cppStandard": "c++17"
+        },
+        {
+            "name": "Win32",
+            "forcedInclude": [
+                "C:\\Program Files (x86)\\Arduino\\hardware\\arduino\\avr\\cores\\arduino\\Arduino.h"
+            ],
+            "includePath": [
+                "${workspaceFolder}\\libraries\\**",
+                "${workspaceFolder}\\**"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ], 
+            "intelliSenseMode": "msvc-x64",
             "cStandard": "c11",
             "cppStandard": "c++17"
         }
