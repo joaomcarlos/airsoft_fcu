@@ -1,8 +1,11 @@
+#include "../env.h"
+
 #ifndef DISPLAY_SOURCE
 #define DISPLAY_SOURCE
 
 #include "../include/display.h"
 
+#ifdef LCD
 int display_ready = 0;
 Adafruit_SSD1306 display(128, 32, &Wire, -1);
 
@@ -37,6 +40,10 @@ void display_text(String text, int size, bool selected, int x, int y)
     display.println(text.c_str());
 }
 
+void display_draw_line(int x, int y, int w){
+    display.drawFastHLine(x, y, w, WHITE);
+}
+
 void clear_and_reset()
 {
     clear();
@@ -55,5 +62,19 @@ void draw()
 {
     display.display();
 }
+
+#else
+
+int is_display_ready(){return 1;}
+void init_display(){}
+void display_text(String text, int size, bool selected, int x, int y){
+    info(text);
+}
+void display_draw_line(int x, int y, int w){}
+void clear(){}
+void clear_and_reset(){}
+void draw(){}
+
+#endif
 
 #endif

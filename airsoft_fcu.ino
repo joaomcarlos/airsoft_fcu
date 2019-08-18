@@ -1,8 +1,9 @@
+#include "env.h"
+
 #include <Arduino.h>
+#include <Tasker.h>
 #include <SPI.h>
 #include <EEPROM.h>
-#include <SparkFun_ADXL345.h>
-#include <Tasker.h>
  
 #include "include/log.h"
 #include "include/display.h"
@@ -11,14 +12,14 @@
 
 #define COUNT_OF(x) ((sizeof(x) / sizeof(0 [x])) / ((size_t)(!(sizeof(x) % sizeof(0 [x])))))
 
-#define trigger_pin 9 // input
-#define fire_pin 7 // output
-
 Tasker tasker;
 
 void setup()
 {
-  //Serial.begin(9600);
+  #ifdef SERIAL_LOGGER
+  Serial.begin(9600);
+  #endif
+
   tasker.setTimeout(post_setup, 500);
 }
 
@@ -38,12 +39,12 @@ void post_setup(){
   //tasker.setInterval(blink, 500);
 }
 
-bool blinker = false;
 void loop()
 {
   tasker.loop();
 }
 
+bool blinker = false;
 void blink(){
   digitalWrite(fire_pin, blinker ? HIGH : LOW);
   blinker = !blinker;

@@ -7,14 +7,20 @@
 
 void info(String msg)
 {
-    if (Serial)
-        Serial.println(msg);
+    #ifdef LOGGER
 
+    #ifdef SERIAL_LOGGER
+    if (Serial){
+        Serial.println(msg);
+    }
+    #endif
+    
     if (is_display_ready())
     {
         display_text(msg);
         draw();
     }
+    #endif
 }
 
 #endif

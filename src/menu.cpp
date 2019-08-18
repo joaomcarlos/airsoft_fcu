@@ -88,7 +88,7 @@ int menu(String title, String options)
             menu_opt = opt_count - 1;
 
         clear_and_reset();
-        display.drawFastHLine(0, 6, 128, WHITE);
+        display_draw_line(0, 6, 128);
         display_text(title, 1, 0, 0);
 
         int start = (menu_opt > 1) ? menu_opt - 1 : 0;

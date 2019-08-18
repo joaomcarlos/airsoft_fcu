@@ -75,6 +75,7 @@ void display_accel()
   clear();
   display_text("pitch:" + String(accel.pitch) + " roll:" + String(accel.roll));
 
+  #ifdef LCD
   int r = display.height() / 3;
   int halfR = r / 2;
   int posX = map(accel.roll, -45, 45, halfR, display.width() - halfR);
@@ -88,6 +89,7 @@ void display_accel()
   // draw absolute center
   display.drawFastVLine(display.width() / 2, 10, display.height(), WHITE);
   draw();
+  #endif
 }
 
 #endif
