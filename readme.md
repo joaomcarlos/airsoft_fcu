@@ -17,3 +17,4 @@
 - Adafruit SSD1306 (1.3.0) https://github.com/adafruit/Adafruit_SSD1306
 - Adafruit GFX Library (1.5.6) https://github.com/adafruit/Adafruit-GFX-Library
 - SparkFun ADXL345 Arduino Library (1.0.0) https://github.com/sparkfun/SparkFun_ADXL345_Arduino_Library
+- Tasker by Petr Stehlik (2.0.0) https://github.com/joysfera/arduino-tasker

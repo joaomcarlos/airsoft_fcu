@@ -3,7 +3,7 @@
         {
             "name": "Linux",
             "includePath": [
-                "${workspaceFolder}/libraries/**", 
+                "${workspaceFolder}/libraries/**",
                 "${workspaceFolder}/**"
             ],
             "forcedInclude": [
@@ -19,18 +19,34 @@
             "forcedInclude": [
                 "C:\\Program Files (x86)\\Arduino\\hardware\\arduino\\avr\\cores\\arduino\\Arduino.h"
             ],
-            "includePath": [
-                "${workspaceFolder}\\libraries\\**",
-                "${workspaceFolder}\\**"
-            ],
             "defines": [
                 "_DEBUG",
                 "UNICODE",
                 "_UNICODE"
-            ], 
-            "intelliSenseMode": "msvc-x64",
+            ],
             "cStandard": "c11",
-            "cppStandard": "c++17"
+            "cppStandard": "c++17",
+            "includePath": [
+                "C:\\Users\\silent\\Documents\\Arduino\\libraries\\Tasker",
+                "${workspaceRoot}",
+                "${workspaceRoot}\\libraries",
+                "C:\\Program Files (x86)\\Arduino\\hardware\\arduino\\avr\\cores\\arduino",
+                "C:\\Program Files (x86)\\Arduino\\hardware\\tools\\avr\\avr\\include",
+                "C:\\Program Files (x86)\\Arduino\\hardware\\tools\\avr\\lib\\gcc\\avr\\4.9.2\\include",
+                "C:\\Program Files (x86)\\Arduino\\hardware\\arduino\\avr\\variants\\mega"
+            ],
+            "browse": {
+                "limitSymbolsToIncludedHeaders": false,
+                "path": [
+                    "${workspaceRoot}",
+                    "${workspaceRoot}\\libraries",
+                    "C:\\Program Files (x86)\\Arduino\\hardware\\arduino\\avr\\cores\\arduino",
+                    "C:\\Program Files (x86)\\Arduino\\hardware\\tools\\avr\\avr\\include",
+                    "C:\\Program Files (x86)\\Arduino\\hardware\\tools\\avr\\lib\\gcc\\avr\\4.9.2\\include",
+                    "C:\\Program Files (x86)\\Arduino\\hardware\\arduino\\avr\\variants\\mega"
+                ]
+            },
+            "intelliSenseMode": "msvc-x64"
         }
     ],
     "version": 4

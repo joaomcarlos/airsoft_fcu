@@ -2,5 +2,7 @@
     "files.associations": {
         "wire.h": "c",
         "spi.h": "c"
-    }
+    },
+    "C_Cpp.intelliSenseEngineFallback": "Disabled",
+    "C_Cpp.intelliSenseEngine": "Tag Parser"
 }
