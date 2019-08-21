@@ -1,31 +1,37 @@
 #ifndef _MENU_CPP_
 #define _MENU_CPP_
 
+#include "../env.h"
 #include "../include/menu.h"
 #include "../include/accel.h"
 
 #define back_opt "Back"
 #define prefix_opt "> "
 
-Pushbutton down_btn(15);
-Pushbutton up_btn(14);
-Pushbutton sel_btn(16);
+Pushbutton down_btn(down_btn_pin);
+Pushbutton up_btn(up_btn_pin);
+Pushbutton sel_btn(sel_btn_pin);
 int menu_opt = 0;
 
-void update_menu(){
+void update_menu()
+{
     if (sel_btn.getSingleDebouncedPress())
     {
         int res = menu("Menu Principal", "Acelarometro;Option2;Option3;Option4;Option5;Option6;Option7;Option8");
-        if (res == 0){
+        if (res == 0)
+        {
             int r = menu("Acelarometro", "Actual;Alinhar Agora;Zerar calibracao");
-            if(r == 0){
+            if (r == 0)
+            {
                 String cal = "pitch:" + String(calibration.pitch) + " roll:" + String(calibration.roll);
                 menu("Calibracao Actual", cal);
             }
-            if(r == 1){
+            if (r == 1)
+            {
                 calibrate();
             }
-            if(r == 2){
+            if (r == 2)
+            {
                 reset_calibration();
             }
         }

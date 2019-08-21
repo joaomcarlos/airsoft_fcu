@@ -8,5 +8,6 @@
     "arduino.logLevel": "info",
     "arduino.enableUSBDetection": true,
     "C_Cpp.intelliSenseEngineFallback": "Disabled",
-    "C_Cpp.intelliSenseEngine": "Tag Parser"
+    "C_Cpp.intelliSenseEngine": "Tag Parser",
+    "editor.formatOnSave": true
 }

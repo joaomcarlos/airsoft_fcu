@@ -1,29 +1,25 @@
 #include "env.h"
 
 #include <Arduino.h>
-#include <Tasker.h>
 #include <SPI.h>
 #include <EEPROM.h>
- 
+
+#include "include/tasker.h"
+#include "include/global.h"
 #include "include/log.h"
 #include "include/display.h"
 #include "include/accel.h"
 #include "include/menu.h"
 
-#define COUNT_OF(x) ((sizeof(x) / sizeof(0 [x])) / ((size_t)(!(sizeof(x) % sizeof(0 [x])))))
-
-Tasker tasker;
+//Tasker tasker;
 
 void setup()
 {
-  #ifdef SERIAL_LOGGER
-  Serial.begin(9600);
-  #endif
-
   tasker.setTimeout(post_setup, 500);
 }
 
-void post_setup(){
+void post_setup()
+{
   init_display();
   init_accelarometer();
 
@@ -45,7 +41,9 @@ void loop()
 }
 
 bool blinker = false;
-void blink(){
+void blink()
+{
+  info("blink!");
   digitalWrite(fire_pin, blinker ? HIGH : LOW);
   blinker = !blinker;
 }

@@ -4,10 +4,13 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/libraries/**",
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/**",
+                "C:\\Program Files (x86)\\Arduino\\hardware\\arduino\\avr\\**",
+                "C:\\Program Files (x86)\\Arduino\\tools\\**"
             ],
             "forcedInclude": [
-                "/home/joaoc/Downloads/arduino-1.8.9/hardware/arduino/avr/cores/arduino/Arduino.h"
+                "/home/joaoc/Downloads/arduino-1.8.9/hardware/arduino/avr/cores/arduino/Arduino.h",
+                "C:\\Program Files (x86)\\Arduino\\hardware\\arduino\\avr\\cores\\arduino\\Arduino.h"
             ],
             "intelliSenseMode": "gcc-x64",
             "compilerPath": "/usr/bin/gcc"
@@ -23,24 +26,22 @@
                 "_UNICODE"
             ],
             "includePath": [
-                "${workspaceRoot}",
-                "C:\\Program Files (x86)\\Arduino\\hardware\\arduino\\avr\\cores\\arduino",
-                "C:\\Program Files (x86)\\Arduino\\hardware\\tools\\avr\\avr\\include",
-                "C:\\Program Files (x86)\\Arduino\\hardware\\tools\\avr\\lib\\gcc\\avr\\5.4.0\\include",
-                "C:\\Program Files (x86)\\Arduino\\hardware\\arduino\\avr\\variants\\mega"
+                "C:\\Program Files (x86)\\Arduino\\tools\\**",
+                "C:\\Program Files (x86)\\Arduino\\hardware\\arduino\\avr\\**",
+                "${workspaceRoot}"
             ],
             "browse": {
                 "limitSymbolsToIncludedHeaders": false,
                 "path": [
-                    "${workspaceRoot}",
-                    "C:\\Program Files (x86)\\Arduino\\hardware\\arduino\\avr\\cores\\arduino",
-                    "C:\\Program Files (x86)\\Arduino\\hardware\\tools\\avr\\avr\\include",
-                    "C:\\Program Files (x86)\\Arduino\\hardware\\tools\\avr\\lib\\gcc\\avr\\5.4.0\\include",
-                    "C:\\Program Files (x86)\\Arduino\\hardware\\arduino\\avr\\variants\\mega"
+                    "C:\\Program Files (x86)\\Arduino\\tools\\**",
+                    "C:\\Program Files (x86)\\Arduino\\hardware\\arduino\\avr\\**",
+                    "${workspaceRoot}"
                 ]
             },
             "intelliSenseMode": "msvc-x64",
-            "compilerArgs": ["-I${workspaceRoot}"]
+            "compilerArgs": [
+                "-I${workspaceRoot}"
+            ]
         }
     ],
     "version": 4

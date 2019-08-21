@@ -40,7 +40,8 @@ void display_text(String text, int size, bool selected, int x, int y)
     display.println(text.c_str());
 }
 
-void display_draw_line(int x, int y, int w){
+void display_draw_line(int x, int y, int w)
+{
     display.drawFastHLine(x, y, w, WHITE);
 }
 
@@ -65,15 +66,16 @@ void draw()
 
 #else
 
-int is_display_ready(){return 1;}
-void init_display(){}
-void display_text(String text, int size, bool selected, int x, int y){
+int is_display_ready() { return 1; }
+void init_display() {}
+void display_text(String text, int size, bool selected, int x, int y)
+{
     info(text);
 }
-void display_draw_line(int x, int y, int w){}
-void clear(){}
-void clear_and_reset(){}
-void draw(){}
+void display_draw_line(int x, int y, int w) {}
+void clear() {}
+void clear_and_reset() {}
+void draw() {}
 
 #endif
 
