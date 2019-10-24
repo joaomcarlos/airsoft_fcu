@@ -1,6 +1,6 @@
 {
     "programmer": "AVRISP mkII",
-    "port": "COM7",
+    "port": "COM9",
     "board": "arduino:avr:leonardo",
     "sketch": "airsoft_fcu.ino",
     "output": ".vscode/build"

@@ -1,60 +1,61 @@
 #ifndef ACCEL_SOURCE
 #define ACCEL_SOURCE
 
+#include <Arduino.h>
+#include <SPI.h>
+#include <EEPROM.h>
+#include <MPU6050_tockn.h>
+#include <Wire.h>
+
 #include "../include/log.h"
 #include "../include/display.h"
 #include "../include/accel.h"
 
-ADXL345 adxl;
-AccelCalibrationData calibration;
+MPU6050 mpu(Wire);
+
+GyroCalibrationData calibration;
 AccelData accel;
 
 void init_accelarometer()
 {
-    info("ADXL Power On.");
+    info("Accell Power On.");
     //delay(5000);
-    adxl = ADXL345();
-    adxl.powerOn();
-    //adxl.setRangeSetting(2);
-    info("Conectado ao ADXL!");
+    Wire.begin();
+    mpu.begin();
+
+    reset_calibration();
+
+    info("Conectado ao Accell!");
     info("Leu calibracao.");
     EEPROM.get(0, calibration);
+    mpu.setGyroOffsets(calibration.x, calibration.y, calibration.z);
 }
 
 #define ACCELAROMETER_ORIENTATION_HORIZONTAL 0
 #define ACCELAROMETER_ORIENTATION_VERTICAL 1
-#define ACCELAROMETER_ORIENTATION ACCELAROMETER_ORIENTATION_HORIZONTAL
+#define ACCELAROMETER_ORIENTATION ACCELAROMETER_ORIENTATION_VERTICAL
 
 void update_accel()
 {
-    int ax, ay, az;
-    adxl.readAccel(&ax, &ay, &az);
+    mpu.update();
 
-    accel.x = ax;
-    accel.y = ay;
-    accel.z = az;
-
-    double x_Buff = float(accel.x);
-    double y_Buff = float(accel.y);
-    double z_Buff = float(accel.z);
-    accel.raw_pitch = atan2((-x_Buff), sqrt(y_Buff * y_Buff + z_Buff * z_Buff)) * 57.3;
-    accel.raw_roll = atan2(y_Buff, z_Buff) * 57.3;
+    accel.raw_pitch = mpu.getGyroAngleZ();
+    accel.raw_roll = mpu.getGyroAngleX();
 
 #if (ACCELAROMETER_ORIENTATION == ACCELAROMETER_ORIENTATION_VERTICAL)
     accel.raw_roll -= 90;
 #endif
 
-    accel.pitch = accel.raw_pitch - calibration.pitch;
-    accel.roll = accel.raw_roll - calibration.roll;
+    accel.pitch = accel.raw_pitch;
+    accel.roll = accel.raw_roll;
 }
 
 void calibrate()
 {
-    clear_and_reset();
     info("A calibrar...");
     delay(2000);
-    update_accel();
-    calibration = {accel.raw_pitch, accel.raw_roll};
+    mpu.calcGyroOffsets();
+    calibration = {mpu.getGyroXoffset(), mpu.getGyroYoffset(), mpu.getGyroZoffset()};
     EEPROM.put(0, calibration);
     info("Calibracao escrita para a EEPROM.");
     delay(1500);
@@ -62,18 +63,22 @@ void calibrate()
 
 void reset_calibration()
 {
-    calibration = {0.00, 0.00};
+    /** manual rought reading
+    X : -2.04
+    Y : -0.03
+    Z : -0.56
+    */
+    calibration = {-2.04, -0.03, -0.56};
     EEPROM.put(0, calibration);
 
-    clear_and_reset();
     info("Calibracao a zero...");
     delay(1500);
 }
 
 void display_accel()
 {
-    clear();
-    display_text("pitch:" + String(accel.pitch) + " roll:" + String(accel.roll));
+    clear_and_reset();
+    display_text("pitch:" + String(accel.pitch) + " roll:" + String(accel.roll), 1, false, 0, 0);
 
 #ifdef LCD
     int r = display.height() / 3;
@@ -82,12 +87,13 @@ void display_accel()
     int posY = (display.height() / 2) + halfR;
 
     // draw ball and line
-    display.drawCircle(posX, posY, r, WHITE);
-    display.drawFastVLine(posX, posY - halfR, r, WHITE);
-    display.drawFastHLine(posX - halfR, posY, r, WHITE);
+    //display.DrawClosedCurve()
+    //display.drawCircle(posX, posY, r, WHITE);
+    //display.drawVLine(posX, posY - halfR, r, WHITE);
+    display_draw_line(posX, posY - halfR, r);
 
     // draw absolute center
-    display.drawFastVLine(display.width() / 2, 10, display.height(), WHITE);
+    //display.drawVLine(display.width() / 2, 10, display.height(), WHITE);
     draw();
 #endif
 }

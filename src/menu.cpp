@@ -23,7 +23,7 @@ void update_menu()
             int r = menu("Acelarometro", "Actual;Alinhar Agora;Zerar calibracao");
             if (r == 0)
             {
-                String cal = "pitch:" + String(calibration.pitch) + " roll:" + String(calibration.roll);
+                String cal = "x:" + String(calibration.x) + " y:" + String(calibration.y) + " z:" + String(calibration.z);
                 menu("Calibracao Actual", cal);
             }
             if (r == 1)

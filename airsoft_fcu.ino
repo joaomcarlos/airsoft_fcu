@@ -23,6 +23,7 @@ void post_setup()
   init_display();
   init_accelarometer();
 
+  pinMode(trigger_pin, INPUT);
   pinMode(fire_pin, OUTPUT);
 
   info("A iniciar ...");

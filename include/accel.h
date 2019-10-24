@@ -1,17 +1,11 @@
 #ifndef _ACCEL_H_
 #define _ACCEL_H_
 
-#include <Arduino.h>
-#include <SPI.h>
-#include <EEPROM.h>
-#include <SparkFun_ADXL345.h>
-#include "accel.h"
-#include "log.h"
-
-struct AccelCalibrationData
+struct GyroCalibrationData
 {
-    double pitch;
-    double roll;
+    float x;
+    float y;
+    float z;
 };
 
 struct AccelData
@@ -19,14 +13,15 @@ struct AccelData
     int x;
     int y;
     int z;
-    double raw_pitch;
-    double raw_roll;
-    double pitch;
-    double roll;
+    float raw_pitch;
+    float raw_roll;
+    float raw_yaw;
+    float pitch;
+    float roll;
+    float yaw;
 };
 
-extern ADXL345 adxl;
-extern AccelCalibrationData calibration;
+extern GyroCalibrationData calibration;
 extern AccelData accel;
 
 void init_accelarometer();
