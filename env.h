@@ -12,8 +12,8 @@
 #define LCD
 #define ACCEL
 
-#define trigger_pin 7 // input
-#define fire_pin 21   // output (A3)
+#define trigger_btn_pin 7 // input
+#define fire_pin 21       // output (A3)
 
 #define down_btn_pin 16
 #define up_btn_pin 10
