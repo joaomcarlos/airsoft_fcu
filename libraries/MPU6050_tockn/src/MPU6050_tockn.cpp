@@ -63,17 +63,17 @@ void MPU6050::calcGyroOffsets(bool console, uint16_t delayBefore, uint16_t delay
   delay(delayBefore);
   if (console)
   {
-    Serial.println();
+    /*Serial.println();
     Serial.println("========================================");
     Serial.println("Calculating gyro offsets");
-    Serial.print("DO NOT MOVE MPU6050");
+    Serial.print("DO NOT MOVE MPU6050");*/
   }
   for (int i = 0; i < 3000; i++)
   {
-    if (console && i % 1000 == 0)
+    /*if (console && i % 1000 == 0)
     {
       Serial.print(".");
-    }
+    }*/
     wire->beginTransmission(MPU6050_ADDR);
     wire->write(0x43);
     wire->endTransmission(false);
@@ -86,6 +86,7 @@ void MPU6050::calcGyroOffsets(bool console, uint16_t delayBefore, uint16_t delay
     x += ((float)rx) / 65.5;
     y += ((float)ry) / 65.5;
     z += ((float)rz) / 65.5;
+    delay(1);
   }
   gyroXoffset = x / 3000;
   gyroYoffset = y / 3000;
@@ -93,7 +94,7 @@ void MPU6050::calcGyroOffsets(bool console, uint16_t delayBefore, uint16_t delay
 
   if (console)
   {
-    Serial.println();
+    /*Serial.println();
     Serial.println("Done!");
     Serial.print("X : ");
     Serial.println(gyroXoffset);
@@ -103,12 +104,17 @@ void MPU6050::calcGyroOffsets(bool console, uint16_t delayBefore, uint16_t delay
     Serial.println(gyroZoffset);
     Serial.println("Program will start after 3 seconds");
     Serial.print("========================================");
-    delay(delayAfter);
+    delay(delayAfter);*/
   }
 }
 
 void MPU6050::update()
 {
+  if ((millis() - preInterval) < 0.1)
+  {
+    return;
+  }
+
   wire->beginTransmission(MPU6050_ADDR);
   wire->write(0x3B);
   wire->endTransmission(false);

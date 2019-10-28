@@ -23,14 +23,13 @@ void post_setup()
   init_display();
   init_accelarometer();
 
-  pinMode(trigger_pin, INPUT);
   pinMode(fire_pin, OUTPUT);
 
   info("A iniciar ...");
   //delay(3000);
   clear_and_reset();
 
-  tasker.setInterval(update_accel, 99);
+  //tasker.setInterval(update_accel, 1);
   tasker.setInterval(update_menu, 100);
   tasker.setInterval(display_accel, 100);
   //tasker.setInterval(blink, 500);
@@ -38,6 +37,7 @@ void post_setup()
 
 void loop()
 {
+  update_accel(); // highest priority to avoid drift
   tasker.loop();
 }
 
