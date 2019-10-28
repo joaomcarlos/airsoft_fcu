@@ -23,7 +23,7 @@ void update_menu()
             int r = menu("Acelarometro", "Actual;Alinhar Agora;Zerar calibracao");
             if (r == 0)
             {
-                String cal = "x:" + String(calibration.x) + " y:" + String(calibration.y) + " z:" + String(calibration.z);
+                String cal = "x:" + String(calibration.gx) + " y:" + String(calibration.gy) + " z:" + String(calibration.gz);
                 menu("Calibracao Actual", cal);
             }
             if (r == 1)
@@ -38,16 +38,17 @@ void update_menu()
         if (res == 1)
             menu("Sub menu opt 2", "Sub opt 2-1;Sub opt 2-2");
     }
+    display_accel();
 }
 
-bool update_menu_opts()
+bool changed_menu_options()
 {
     int old_menu_opt = menu_opt;
     if (up_btn.getSingleDebouncedPress())
         menu_opt += 1;
     if (down_btn.getSingleDebouncedPress())
         menu_opt -= 1;
-    return old_menu_opt == menu_opt;
+    return old_menu_opt != menu_opt;
 }
 
 int menu(String title, String options)
@@ -73,37 +74,40 @@ int menu(String title, String options)
         last_search_i = colon_index + 1;
     }
 
+    clear_and_reset();
+    bool firstLoop = true;
     while (true)
     {
         if (sel_btn.getSingleDebouncedPress())
         {
+            clear_and_reset();
             return menu_opt;
         }
 
         // save energy by short circuiting
-        if (!update_menu_opts())
+        if (firstLoop || changed_menu_options())
         {
-            delay(100);
-            continue;
+            firstLoop = false;
+
+            // menu selection wraps around
+            if (menu_opt + 1 > opt_count)
+                menu_opt = -1;
+            if (menu_opt < -1)
+                menu_opt = opt_count - 1;
+
+            display_text(title, 1, false, 0, 0); // title
+
+            int start = (menu_opt > 1) ? menu_opt - 1 : 0;
+            for (byte idx = start; idx < opt_count + 1; idx++)
+            {
+                int y = FONT_SIZE + (idx - start) * FONT_SIZE;
+                if (y > display.height())
+                    continue;
+
+                display_text("                                           ", 1, false, 0, y);
+                display_text(prefix_opt + opt_items[idx] + " ", 1, menu_opt == idx - 1, 0, y);
+            }
         }
-
-        // menu wraps around
-        if (menu_opt + 1 > opt_count)
-            menu_opt = -1;
-        if (menu_opt < -1)
-            menu_opt = opt_count - 1;
-
-        clear_and_reset();
-        display_draw_line(0, 6, 128);
-        display_text(title, 1, 0, 0);
-
-        int start = (menu_opt > 1) ? menu_opt - 1 : 0;
-        for (byte idx = start; idx < opt_count + 1; idx++)
-        {
-            display_text(prefix_opt + opt_items[idx], 1, menu_opt == idx - 1);
-        }
-
-        draw();
         delay(100);
     }
 }

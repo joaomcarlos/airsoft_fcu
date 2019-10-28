@@ -1,5 +1,6 @@
 #ifndef LOG_SOURCE
 #define LOG_SOURCE
+#define DISPLAY_MAX_LINES 4
 
 #include <Arduino.h>
 #include "../include/display.h"
@@ -16,12 +17,23 @@ void serial_log(String msg)
 }
 #endif
 
+String display_log_buffer[DISPLAY_MAX_LINES];
 void info(String msg)
 {
     if (is_display_ready())
     {
-        display_text(msg);
-        draw();
+        int i;
+        for (i = 0; i < DISPLAY_MAX_LINES - 1; i++)
+        {
+            display_log_buffer[i] = display_log_buffer[i + 1];
+        }
+        display_log_buffer[DISPLAY_MAX_LINES - 1] = msg;
+
+        clear_and_reset();
+        for (i = 0; i < DISPLAY_MAX_LINES; i++)
+        {
+            display_text(display_log_buffer[i], 1, false, 0, i * FONT_SIZE);
+        }
     }
 
 #ifdef SERIAL_LOGGER

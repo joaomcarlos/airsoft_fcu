@@ -34,23 +34,26 @@ void display_text(String text, int size, bool selected, int x, int y)
         display.positiveMode();
     //if (!(x == -1 && y == -1))
     display.printFixedN(x, y, text.c_str(), selected ? STYLE_BOLD : STYLE_NORMAL, fsize);
+    display.positiveMode(); // reset it back
 }
 
 void display_draw_line(int x, int y, int w)
 {
+    display.negativeMode();
     display.drawHLine(x, y, x + w);
+    display.positiveMode();
 }
 
 void clear_and_reset()
 {
     clear();
-    display.setFixedFont(ssd1306xled_font6x8);
-    display.positiveMode();
 }
 
 void clear()
 {
     display.clear();
+    display.positiveMode();
+    display.setFixedFont(ssd1306xled_font6x8);
 }
 
 void draw()

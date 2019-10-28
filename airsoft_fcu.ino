@@ -11,14 +11,7 @@
 #include "include/accel.h"
 #include "include/menu.h"
 
-//Tasker tasker;
-
 void setup()
-{
-  tasker.setTimeout(post_setup, 500);
-}
-
-void post_setup()
 {
   init_display();
   init_accelarometer();
@@ -26,13 +19,9 @@ void post_setup()
   pinMode(fire_pin, OUTPUT);
 
   info("A iniciar ...");
-  //delay(3000);
+  delay(1500);
   clear_and_reset();
-
-  //tasker.setInterval(update_accel, 1);
   tasker.setInterval(update_menu, 100);
-  tasker.setInterval(display_accel, 100);
-  //tasker.setInterval(blink, 500);
 }
 
 void loop()
