@@ -13,15 +13,18 @@
 
 void setup()
 {
+  delay(1500); // else it wont start with battery power
   init_display();
   init_accelarometer();
 
   pinMode(fire_pin, OUTPUT);
+  
+  //tasker.setInterval(update_accel, 10);
+  tasker.setInterval(update_menu, 100);
 
   info("A iniciar ...");
   delay(1500);
   clear_and_reset();
-  tasker.setInterval(update_menu, 100);
 }
 
 void loop()

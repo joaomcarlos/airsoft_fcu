@@ -39,8 +39,8 @@ void update_menu()
         if (res == 1)
             menu("Sub menu opt 2", "Sub opt 2-1;Sub opt 2-2");
     }
-    //display_accel();
-    display_fire_system_status();
+    display_accel();
+    //display_fire_system_status();
 }
 
 bool changed_menu_options()

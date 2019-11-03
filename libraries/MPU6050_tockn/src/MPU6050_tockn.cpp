@@ -86,7 +86,7 @@ void MPU6050::calcGyroOffsets(bool console, uint16_t delayBefore, uint16_t delay
     x += ((float)rx) / 65.5;
     y += ((float)ry) / 65.5;
     z += ((float)rz) / 65.5;
-    delay(1);
+    //delay(1);
   }
   gyroXoffset = x / 3000;
   gyroYoffset = y / 3000;
