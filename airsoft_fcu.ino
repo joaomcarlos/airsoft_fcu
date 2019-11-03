@@ -18,9 +18,10 @@ void setup()
   init_accelarometer();
 
   pinMode(fire_pin, OUTPUT);
-  
+
   //tasker.setInterval(update_accel, 10);
   tasker.setInterval(update_menu, 100);
+  tasker.setInterval(perform_draw_call, 40);
 
   info("A iniciar ...");
   delay(1500);

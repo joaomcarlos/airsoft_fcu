@@ -6,17 +6,27 @@
 #include "../include/display.h"
 
 #ifdef LCD
-int display_ready = 0;
-DisplaySSD1306_128x32_I2C display(-1);
+bool display_ready = false;
 
-int is_display_ready()
+DisplaySSD1306_128x32_I2C display(-1);
+const int canvasWidth = 128;
+const int canvasHeight = 32;
+uint8_t canvasData[canvasWidth * (canvasHeight / 8)];
+NanoCanvas1 canvas(canvasWidth, canvasHeight, canvasData);
+DrawCallback currentDrawCall;
+
+bool is_display_ready()
 {
-    return display_ready == 1;
+    return display_ready;
 }
 
 void init_display()
 {
     display.begin();
+    display.clear();
+    canvas.setMode(CANVAS_MODE_TRANSPARENT);
+    canvas.setFixedFont(ssd1306xled_font6x8);
+
     display_ready = 1;
     clear_and_reset();
     info("Conectado ao display!");
@@ -29,19 +39,19 @@ void display_text(String text, int size, bool selected, int x, int y)
         fsize = FONT_SIZE_2X;
 
     if (selected)
-        display.negativeMode();
+        canvas.setColor(BLACK);
     else
-        display.positiveMode();
+        canvas.setColor(WHITE);
     //if (!(x == -1 && y == -1))
-    display.printFixedN(x, y, text.c_str(), selected ? STYLE_BOLD : STYLE_NORMAL, fsize);
-    display.positiveMode(); // reset it back
+    canvas.printFixed(x, y, text.c_str(), selected ? STYLE_BOLD : STYLE_NORMAL);
+    canvas.setColor(WHITE); // reset it back
 }
 
 void display_draw_line(int x, int y, int w)
 {
-    display.negativeMode();
-    display.drawHLine(x, y, x + w);
-    display.positiveMode();
+    canvas.setColor(BLACK);
+    canvas.drawHLine(x, y, x + w);
+    canvas.setColor(WHITE);
 }
 
 void clear_and_reset()
@@ -51,14 +61,26 @@ void clear_and_reset()
 
 void clear()
 {
-    display.clear();
-    display.positiveMode();
-    display.setFixedFont(ssd1306xled_font6x8);
+    canvas.clear();
+    canvas.setColor(WHITE);
 }
 
 void draw()
 {
-    //lcd_delay(500);
+    display.drawCanvas(0, 0, canvas);
+}
+
+void perform_draw_call()
+{
+    if (currentDrawCall())
+    {
+        draw();
+    }
+}
+
+void set_draw_callback(DrawCallback cb)
+{
+    currentDrawCall = cb;
 }
 
 #else

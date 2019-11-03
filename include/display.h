@@ -17,13 +17,16 @@ extern int display;
 
 #include "log.h"
 
-extern int display_ready;
-int is_display_ready();
+typedef bool (*DrawCallback)(void);
+extern bool display_ready;
+bool is_display_ready();
 void init_display();
 void display_text(String text, int size = 1, bool selected = false, int x = -1, int y = -1);
 void display_draw_line(int x, int y, int w);
 void clear();
 void clear_and_reset();
 void draw();
+void set_draw_callback(DrawCallback cb);
+void perform_draw_call();
 
 #endif

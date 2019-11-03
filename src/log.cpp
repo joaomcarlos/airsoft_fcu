@@ -20,21 +20,19 @@ void serial_log(String msg)
 String display_log_buffer[DISPLAY_MAX_LINES];
 void info(String msg)
 {
-    if (is_display_ready())
+    int i;
+    for (i = 0; i < DISPLAY_MAX_LINES - 1; i++)
     {
-        int i;
-        for (i = 0; i < DISPLAY_MAX_LINES - 1; i++)
-        {
-            display_log_buffer[i] = display_log_buffer[i + 1];
-        }
-        display_log_buffer[DISPLAY_MAX_LINES - 1] = msg;
-
-        clear_and_reset();
-        for (i = 0; i < DISPLAY_MAX_LINES; i++)
-        {
-            display_text(display_log_buffer[i], 1, false, 0, i * FONT_SIZE);
-        }
+        display_log_buffer[i] = display_log_buffer[i + 1];
     }
+    display_log_buffer[DISPLAY_MAX_LINES - 1] = msg;
+
+    clear_and_reset();
+    for (i = 0; i < DISPLAY_MAX_LINES; i++)
+    {
+        display_text(display_log_buffer[i], 1, false, 0, i * FONT_SIZE);
+    }
+    draw();
 
 #ifdef SERIAL_LOGGER
     serial_log("info -> " + msg);

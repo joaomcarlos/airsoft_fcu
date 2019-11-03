@@ -12,6 +12,38 @@
 Pushbutton down_btn(down_btn_pin);
 Pushbutton up_btn(up_btn_pin);
 Pushbutton sel_btn(sel_btn_pin);
+
+
+class OptionsMenu {
+    public:
+        Menu(String title, String options);
+        Menu(String title, DrawCallback customDrawCallback);
+        bool needsRedraw();
+        void draw();
+        void up();
+        void down();
+
+    private:
+        String title;
+        String options;
+        DrawCallback customDrawCallback;
+        uint8_t menu_opt;
+        uint8_t old_menu_opt;
+}
+
+class OptionsMenuItem {
+    public:
+        OptionsMenuItem(String label);
+        OptionsMenuItem(String label, Menu *subMenu);
+        bool hasSubMenu();
+        Menu* getSubMenu();
+        String getLabel();
+    private:
+        String label;
+        Menu *subMenu;
+}
+
+Menu menu_principal 
 int menu_opt = 0;
 
 void update_menu()
@@ -39,8 +71,7 @@ void update_menu()
         if (res == 1)
             menu("Sub menu opt 2", "Sub opt 2-1;Sub opt 2-2");
     }
-    display_accel();
-    //display_fire_system_status();
+    set_draw_callback(display_accel);
 }
 
 bool changed_menu_options()
@@ -78,39 +109,36 @@ int menu(String title, String options)
 
     clear_and_reset();
     bool firstLoop = true;
-    while (true)
+
+    if (sel_btn.getSingleDebouncedPress())
     {
-        if (sel_btn.getSingleDebouncedPress())
+        clear_and_reset();
+        return menu_opt;
+    }
+
+    // save energy by short circuiting
+    if (firstLoop || changed_menu_options())
+    {
+        firstLoop = false;
+
+        // menu selection wraps around
+        if (menu_opt + 1 > opt_count)
+            menu_opt = -1;
+        if (menu_opt < -1)
+            menu_opt = opt_count - 1;
+
+        display_text(title, 1, false, 0, 0); // title
+
+        int start = (menu_opt > 1) ? menu_opt - 1 : 0;
+        for (byte idx = start; idx < opt_count + 1; idx++)
         {
-            clear_and_reset();
-            return menu_opt;
+            int y = FONT_SIZE + (idx - start) * FONT_SIZE;
+            if (y > display.height())
+                continue;
+
+            display_text("                                           ", 1, false, 0, y);
+            display_text(prefix_opt + opt_items[idx] + " ", 1, menu_opt == idx - 1, 0, y);
         }
-
-        // save energy by short circuiting
-        if (firstLoop || changed_menu_options())
-        {
-            firstLoop = false;
-
-            // menu selection wraps around
-            if (menu_opt + 1 > opt_count)
-                menu_opt = -1;
-            if (menu_opt < -1)
-                menu_opt = opt_count - 1;
-
-            display_text(title, 1, false, 0, 0); // title
-
-            int start = (menu_opt > 1) ? menu_opt - 1 : 0;
-            for (byte idx = start; idx < opt_count + 1; idx++)
-            {
-                int y = FONT_SIZE + (idx - start) * FONT_SIZE;
-                if (y > display.height())
-                    continue;
-
-                display_text("                                           ", 1, false, 0, y);
-                display_text(prefix_opt + opt_items[idx] + " ", 1, menu_opt == idx - 1, 0, y);
-            }
-        }
-        delay(100);
     }
 }
 
