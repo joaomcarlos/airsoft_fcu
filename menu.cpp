@@ -180,7 +180,11 @@ void handle_menu_screen_logic()
     switch (cur_menu)
     {
     case MENU_OPCOES_ROOT:
-        set_draw_callback(display_accel);
+        menu_opt = max(min(menu_opt, 0), -1);
+        if (menu_opt == -1)
+            set_draw_callback(display_accel);
+        if (menu_opt == 0)
+            set_draw_callback(display_fire_system_status);
         break;
     case MENU_OPCOES_PRINCIPAL:
         set_draw_callback(display_menu_principal);

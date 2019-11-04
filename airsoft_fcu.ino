@@ -19,7 +19,7 @@ void setup()
 
   pinMode(fire_pin, OUTPUT);
 
-  //tasker.setInterval(update_accel, 10);
+  tasker.setInterval(update_accel, 10);
   tasker.setInterval(update_menu, 100);
   tasker.setInterval(perform_draw_call, 40);
 
@@ -30,7 +30,7 @@ void setup()
 
 void loop()
 {
-  update_accel(); // highest priority to avoid drift
+  //update_accel(); // highest priority to avoid drift
   tasker.loop();
 }
 

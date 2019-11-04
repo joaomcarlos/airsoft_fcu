@@ -13,7 +13,4 @@ extern int menu_opt;
 
 void update_menu();
 
-
-
-
 #endif
