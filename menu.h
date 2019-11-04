@@ -11,13 +11,9 @@ extern Pushbutton up_btn;
 extern Pushbutton sel_btn;
 extern int menu_opt;
 
-struct Menu
-{
-    string title;
-    string options;
-};
-
 void update_menu();
-bool update_menu_opts();
-int menu(String title, String options);
+
+
+
+
 #endif

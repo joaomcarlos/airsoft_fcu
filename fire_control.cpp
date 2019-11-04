@@ -1,8 +1,8 @@
 #ifndef _FIRE_CONTROL_CPP_
 #define _FIRE_CONTROL_CPP_
 
-#include "../env.h"
-#include "../include/fire_control.h"
+#include "env.h"
+#include "fire_control.h"
 
 Pushbutton trigger_btn(trigger_btn_pin);
 Pushbutton safe_btn(safe_btn_pin);

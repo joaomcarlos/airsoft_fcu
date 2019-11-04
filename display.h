@@ -1,5 +1,5 @@
-#include "../env.h"
 #include <Arduino.h>
+#include "env.h"
 
 #ifndef DISPLAY_H
 #define DISPLAY_H
@@ -8,6 +8,9 @@
 #include "lcdgfx.h"
 
 extern DisplaySSD1306_128x32_I2C display;
+extern NanoCanvas1 canvas;
+typedef bool (*DrawCallback)(void);
+extern DrawCallback currentDrawCall;
 
 #else
 
@@ -17,7 +20,6 @@ extern int display;
 
 #include "log.h"
 
-typedef bool (*DrawCallback)(void);
 extern bool display_ready;
 bool is_display_ready();
 void init_display();

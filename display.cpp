@@ -1,9 +1,9 @@
-#include "../env.h"
+#include "env.h"
 
 #ifndef DISPLAY_SOURCE
 #define DISPLAY_SOURCE
 
-#include "../include/display.h"
+#include "display.h"
 
 #ifdef LCD
 bool display_ready = false;
@@ -38,9 +38,10 @@ void display_text(String text, int size, bool selected, int x, int y)
     if (size == 2)
         fsize = FONT_SIZE_2X;
 
-    if (selected)
+    if (selected){
+        canvas.fillRect(x, y, text.length()*8, y + 8);
         canvas.setColor(BLACK);
-    else
+    }else
         canvas.setColor(WHITE);
     //if (!(x == -1 && y == -1))
     canvas.printFixed(x, y, text.c_str(), selected ? STYLE_BOLD : STYLE_NORMAL);

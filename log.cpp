@@ -3,8 +3,8 @@
 #define DISPLAY_MAX_LINES 4
 
 #include <Arduino.h>
-#include "../include/display.h"
-#include "../include/log.h"
+#include "display.h"
+#include "log.h"
 
 #ifdef LOGGER
 #ifdef SERIAL_LOGGER

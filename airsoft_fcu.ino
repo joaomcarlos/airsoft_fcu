@@ -4,12 +4,12 @@
 #include <SPI.h>
 #include <EEPROM.h>
 
-#include "include/tasker.h"
-#include "include/global.h"
-#include "include/log.h"
-#include "include/display.h"
-#include "include/accel.h"
-#include "include/menu.h"
+#include "tasker.h"
+#include "global.h"
+#include "log.h"
+#include "display.h"
+#include "accel.h"
+#include "menu.h"
 
 void setup()
 {

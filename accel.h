@@ -19,6 +19,7 @@ void update_accel();
 void calibrate();
 void reset_calibration();
 bool display_accel();
+bool display_calibration();
 float invSqrt(float x);
 void MadgwickAHRSupdateIMU(float gx, float gy, float gz, float ax, float ay, float az);
 
