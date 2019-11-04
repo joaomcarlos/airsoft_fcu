@@ -12,7 +12,7 @@
 #endif
 
 #include "Arduino.h"
-#include "../include/tasker.h"
+#include "tasker.h"
 
 Tasker::Tasker(bool prioritized)
 {

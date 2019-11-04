@@ -12,6 +12,8 @@ extern Pushbutton sel_btn;
 extern int menu_opt;
 
 void update_menu();
-bool update_menu_opts();
-int menu(String title, String options);
+
+
+
+
 #endif

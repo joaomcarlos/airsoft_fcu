@@ -9,9 +9,9 @@
 #include <MadgwickAHRS.h>
 #include <Wire.h>
 
-#include "../include/log.h"
-#include "../include/display.h"
-#include "../include/accel.h"
+#include "log.h"
+#include "display.h"
+#include "accel.h"
 
 MPU6050 mpu(Wire);
 
@@ -37,8 +37,9 @@ void init_accelarometer()
 	filter.begin(100); // filter to expect 100 measurements per second
 
 	int i;
-	for (i=0; i<3000; i++){
-		update_accel();
+	for (i = 0; i < 30; i++)
+	{
+		//update_accel();
 	}
 }
 
@@ -93,9 +94,9 @@ void reset_calibration()
 	delay(1500);
 }
 
-void display_accel()
+bool display_accel()
 {
-	//clear_and_reset();
+	clear_and_reset();
 	display_text("pitch: " + String(getPitch()), 1, false, 0, 0);
 	display_text("roll: " + String(getRoll()), 1, false, 0, 8);
 	display_text("yaw: " + String(getYaw()), 1, false, 0, 16);
@@ -117,6 +118,16 @@ void display_accel()
 	//display.drawVLine(display.width() / 2, 10, display.height(), WHITE);
 	//draw();
 #endif
+
+	return true;
+}
+
+bool display_calibration(){
+	clear_and_reset();
+	display_text("Calibracao Actual", 1, false, 0, 0);
+	display_text("gx:" + String(calibration.gx), 1, false, 0, 8);
+	display_text("gy:" + String(calibration.gy), 1, false, 0, 8*2);
+	display_text("gz:" + String(calibration.gz), 1, false, 0, 8*3);
 }
 
 #endif

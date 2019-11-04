@@ -9,5 +9,6 @@
     "arduino.enableUSBDetection": true,
     "C_Cpp.intelliSenseEngineFallback": "Disabled",
     "C_Cpp.intelliSenseEngine": "Tag Parser",
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "editor.formatOnType": true
 }
