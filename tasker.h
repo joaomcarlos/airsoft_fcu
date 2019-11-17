@@ -7,11 +7,12 @@
 #ifndef _tasker_h
 #define _tasker_h
 
-#ifndef TASKER_MAX_TASKS
-#define TASKER_MAX_TASKS 10 // max 254 entries, one occupies 14 bytes of RAM
-#endif
-
 #include "Arduino.h"
+#include "env.h"
+
+//#ifndef TASKER_MAX_TASKS
+//#define TASKER_MAX_TASKS 10 // max 254 entries, one occupies 14 bytes of RAM
+//#endif
 
 typedef void (*TaskCallback0)(void);
 typedef void (*TaskCallback1)(int);
@@ -19,7 +20,7 @@ typedef void (*TaskCallback1)(int);
 class Tasker
 {
 public:
-    Tasker(bool prioritized = false);
+    Tasker(int task_count, bool prioritized);
 
     bool setTimeout(TaskCallback0 func, unsigned long interval, byte prio = TASKER_MAX_TASKS);
     bool setTimeout(TaskCallback1 func, unsigned long interval, int param, byte prio = TASKER_MAX_TASKS);
@@ -42,10 +43,12 @@ public:
     unsigned long scheduledIn(TaskCallback0 func);
     unsigned long scheduledIn(TaskCallback1 func, int param);
 
-    void loop(void);
+    byte loop(void);
 
     bool isPrioritized() { return t_prioritized; }
     void setPrioritized(bool prioritized) { t_prioritized = prioritized; }
+
+    int pendingTasks() { return t_count; }
 
 private:
     struct TASK
@@ -62,8 +65,9 @@ private:
     bool addTask(TaskCallback1 func, unsigned long interval, unsigned int repeat, int param, byte prio);
     bool removeTask(int t_idx);
 
-    TASK tasks[TASKER_MAX_TASKS];
+    TASK *tasks;
     byte t_count;
+    byte t_task_count;
     bool t_prioritized;
     static const int NO_PARAMETER = -1;
 };

@@ -1,43 +1,34 @@
-#include "env.h"
-
 #include <Arduino.h>
-#include <SPI.h>
-#include <EEPROM.h>
 
-#include "tasker.h"
+#include "env.h"
 #include "global.h"
+#include "tasker.h"
 #include "log.h"
 #include "display.h"
 #include "accel.h"
 #include "menu.h"
+#include "fire_control.h"
 
 void setup()
 {
-  delay(1500); // else it wont start with battery power
-  init_display();
-  init_accelarometer();
+	//if (!Serial)
+	//	delay(1500); // else it wont start with battery power
+	init_display();
+	init_accelarometer();
 
-  pinMode(fire_pin, OUTPUT);
+	init_menu();
+	init_fire_control();
 
-  tasker.setInterval(update_accel, 10);
-  tasker.setInterval(update_menu, 100);
-  tasker.setInterval(perform_draw_call, 40);
-
-  info("A iniciar ...");
-  delay(1500);
-  clear_and_reset();
+	info("A iniciar ...");
+	//if (!Serial)
+	//		delay(1500);
 }
 
 void loop()
 {
-  //update_accel(); // highest priority to avoid drift
-  tasker.loop();
-}
+	//update_accel(); // highest priority to avoid drift
 
-bool blinker = false;
-void blink()
-{
-  info("blink!");
-  digitalWrite(fire_pin, blinker ? HIGH : LOW);
-  blinker = !blinker;
+	// this should also take priority
+	shooting_tasker.loop();
+	tasker.loop();
 }

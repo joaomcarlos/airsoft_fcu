@@ -4,8 +4,8 @@
 #define DISPLAY_SOURCE
 
 #include "display.h"
+#include "global.h"
 
-#ifdef LCD
 bool display_ready = false;
 
 DisplaySSD1306_128x32_I2C display(-1);
@@ -30,6 +30,7 @@ void init_display()
     display_ready = 1;
     clear_and_reset();
     info("Conectado ao display!");
+    tasker.setInterval(perform_draw_call, 73);
 }
 
 void display_text(String text, int size, bool selected, int x, int y)
@@ -38,10 +39,12 @@ void display_text(String text, int size, bool selected, int x, int y)
     if (size == 2)
         fsize = FONT_SIZE_2X;
 
-    if (selected){
-        canvas.fillRect(x, y, text.length()*8, y + 8);
+    if (selected)
+    {
+        canvas.fillRect(x, y, text.length() * 8, y + 8);
         canvas.setColor(BLACK);
-    }else
+    }
+    else
         canvas.setColor(WHITE);
     //if (!(x == -1 && y == -1))
     canvas.printFixed(x, y, text.c_str(), selected ? STYLE_BOLD : STYLE_NORMAL);
@@ -73,7 +76,7 @@ void draw()
 
 void perform_draw_call()
 {
-    if (currentDrawCall())
+    if (currentDrawCall && currentDrawCall())
     {
         draw();
     }
@@ -83,20 +86,5 @@ void set_draw_callback(DrawCallback cb)
 {
     currentDrawCall = cb;
 }
-
-#else
-
-int is_display_ready() { return 1; }
-void init_display() {}
-void display_text(String text, int size, bool selected, int x, int y)
-{
-    info(text);
-}
-void display_draw_line(int x, int y, int w) {}
-void clear() {}
-void clear_and_reset() {}
-void draw() {}
-
-#endif
 
 #endif

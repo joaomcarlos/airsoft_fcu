@@ -7,15 +7,17 @@
 #ifndef _tasker_source
 #define _tasker_source
 
-#ifndef TASKER_MAX_TASKS
-#define TASKER_MAX_TASKS 10 // max 254 entries, one occupies 14 bytes of RAM
-#endif
-
 #include "Arduino.h"
 #include "tasker.h"
 
-Tasker::Tasker(bool prioritized)
+//#ifndef TASKER_MAX_TASKS
+//#define TASKER_MAX_TASKS 10 // max 254 entries, one occupies 14 bytes of RAM
+//#endif
+
+Tasker::Tasker(int task_count, bool prioritized)
 {
+    tasks = new TASK[task_count];
+    t_task_count = task_count;
     t_count = 0;
     t_prioritized = prioritized;
 }
@@ -86,8 +88,9 @@ unsigned long Tasker::scheduledIn(TaskCallback1 func, int param)
     return 0;
 }
 
-void Tasker::loop(void)
+byte Tasker::loop(void)
 {
+    byte work_done = 0;
     byte t_idx = 0;
     unsigned long now = millis();
     while (t_idx < t_count)
@@ -96,6 +99,7 @@ void Tasker::loop(void)
         TASK &t = tasks[t_idx];
         if (now - t.lastRun >= t.interval)
         {
+            work_done++;
             int param = t.param;
             TaskCallback1 call = t.call;
 
@@ -119,6 +123,7 @@ void Tasker::loop(void)
         if (inc)
             t_idx++;
     }
+    return work_done;
 }
 
 int Tasker::findTask(TaskCallback0 func)
@@ -141,14 +146,16 @@ bool Tasker::addTask(TaskCallback1 func, unsigned long interval, unsigned int re
 {
     byte pos = (prio < t_count) ? prio : t_count; // position of newly added task is based on priority
 
+    /*
     int idx = findTask(func, param);
     if (idx >= 0)
     {
         removeTask(idx); // if there's a matching task then remove it first
         pos = idx;       // new task will replace the original one
     }
+    */
 
-    if (t_count >= TASKER_MAX_TASKS || interval == 0)
+    if (t_count >= t_task_count || interval == 0)
         return false;
 
     if (pos < t_count)

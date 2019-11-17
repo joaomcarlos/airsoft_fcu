@@ -11,9 +11,11 @@
 #define SERIAL_LOGGER
 #define LCD
 #define ACCEL
+#define TASKER_MAX_TASKS 10
+#define TASKER_MAX_PRIO_TASKS 5
 
 #define trigger_btn_pin 7 // input
-#define fire_pin 21       // output (A3)
+#define fire_pin A3       // output (A3 = 21)
 
 #define down_btn_pin 10
 #define up_btn_pin 16
@@ -22,6 +24,8 @@
 #define safe_btn_pin 8
 #define full_btn_pin 6
 
+#define SCREEN_WIDTH 128
+#define SCREEN_HEIGHT 32
 #define FONT_SIZE 8
 
 #endif

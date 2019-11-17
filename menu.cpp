@@ -5,6 +5,7 @@
 #include "menu.h"
 #include "accel.h"
 #include "fire_control.h"
+#include "global.h"
 
 #define back_opt "Back"
 #define prefix_opt "> "
@@ -21,6 +22,11 @@
 Pushbutton down_btn(down_btn_pin);
 Pushbutton up_btn(up_btn_pin);
 Pushbutton sel_btn(sel_btn_pin);
+
+void init_menu()
+{
+    tasker.setInterval(update_menu, 201);
+}
 
 int cur_menu = -1;
 int menu_opt = -1;
@@ -55,7 +61,8 @@ void update_menu()
         handle_menu_action();
     }
 
-    handle_menu_screen_logic();
+    if (menu_changed)
+        handle_menu_screen_logic();
 }
 
 bool display_menu_principal()
@@ -182,9 +189,13 @@ void handle_menu_screen_logic()
     case MENU_OPCOES_ROOT:
         menu_opt = max(min(menu_opt, 0), -1);
         if (menu_opt == -1)
-            set_draw_callback(display_accel);
+        {
+            set_draw_callback(draw_fire_system_status);
+        }
         if (menu_opt == 0)
-            set_draw_callback(display_fire_system_status);
+        {
+            set_draw_callback(display_accel);
+        }
         break;
     case MENU_OPCOES_PRINCIPAL:
         set_draw_callback(display_menu_principal);

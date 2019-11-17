@@ -12,6 +12,7 @@
 #include "log.h"
 #include "display.h"
 #include "accel.h"
+#include "global.h"
 
 MPU6050 mpu(Wire);
 
@@ -34,13 +35,17 @@ void init_accelarometer()
 	EEPROM.get(0, calibration);
 	mpu.setGyroOffsets(calibration.gx, calibration.gy, calibration.gz);
 
-	filter.begin(100); // filter to expect 100 measurements per second
+	filter.begin(100); // filter to expect X measurements per second
 
 	int i;
 	for (i = 0; i < 30; i++)
 	{
 		update_accel();
+		//delayMicroseconds(1000);
 	}
+
+	//filter.begin(100); // filter to expect X measurements per second
+	//tasker.setInterval(update_accel, 10);
 }
 
 void update_accel()
@@ -122,12 +127,13 @@ bool display_accel()
 	return true;
 }
 
-bool display_calibration(){
+bool display_calibration()
+{
 	clear_and_reset();
 	display_text("Calibracao Actual", 1, false, 0, 0);
 	display_text("gx:" + String(calibration.gx), 1, false, 0, 8);
-	display_text("gy:" + String(calibration.gy), 1, false, 0, 8*2);
-	display_text("gz:" + String(calibration.gz), 1, false, 0, 8*3);
+	display_text("gy:" + String(calibration.gy), 1, false, 0, 8 * 2);
+	display_text("gz:" + String(calibration.gz), 1, false, 0, 8 * 3);
 }
 
 #endif

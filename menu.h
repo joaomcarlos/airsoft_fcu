@@ -11,6 +11,7 @@ extern Pushbutton up_btn;
 extern Pushbutton sel_btn;
 extern int menu_opt;
 
+void init_menu();
 void update_menu();
 
 #endif
