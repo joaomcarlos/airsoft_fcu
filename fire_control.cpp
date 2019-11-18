@@ -11,7 +11,7 @@ Pushbutton trigger_btn(trigger_btn_pin);
 Pushbutton safe_btn(safe_btn_pin);
 Pushbutton full_btn(full_btn_pin);
 
-#define DWELL 30
+#define DWELL 20
 #define POST_DWELL 20
 
 #define SAFE 0
