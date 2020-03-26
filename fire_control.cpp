@@ -33,6 +33,7 @@ void init_fire_control()
 	tasker.setInterval(update_fire_control, 73);
 	tasker.setInterval(update_fire_control_selector, 213);
 	shots_left = magazine_size;
+	set_draw_callback(draw_fire_system_status);
 }
 
 bool waiting_trigger_release = false;
@@ -68,6 +69,7 @@ void update_fire_control()
 		shots_left = magazine_size;
 		fire_control_display_changed = true;
 	}
+	shoot();
 }
 void update_fire_control_selector()
 {

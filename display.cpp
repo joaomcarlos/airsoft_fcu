@@ -8,9 +8,9 @@
 
 bool display_ready = false;
 
-DisplaySSD1306_128x32_I2C display(-1);
+DisplaySSD1306_128x64_I2C display(-1);
 const int canvasWidth = 128;
-const int canvasHeight = 32;
+const int canvasHeight = 64;
 uint8_t canvasData[canvasWidth * (canvasHeight / 8)];
 NanoCanvas1 canvas(canvasWidth, canvasHeight, canvasData);
 DrawCallback currentDrawCall;
@@ -29,7 +29,6 @@ void init_display()
 
     display_ready = 1;
     clear_and_reset();
-    info("Conectado ao display!");
     tasker.setInterval(perform_draw_call, 73);
 }
 

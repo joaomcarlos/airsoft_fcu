@@ -4,21 +4,12 @@
 #ifndef DISPLAY_H
 #define DISPLAY_H
 
-#ifdef LCD
 #include "lcdgfx.h"
 
-extern DisplaySSD1306_128x32_I2C display;
+extern DisplaySSD1306_128x64_I2C display;
 extern NanoCanvas1 canvas;
 typedef bool (*DrawCallback)(void);
 extern DrawCallback currentDrawCall;
-
-#else
-
-extern int display;
-
-#endif
-
-#include "log.h"
 
 extern bool display_ready;
 bool is_display_ready();
