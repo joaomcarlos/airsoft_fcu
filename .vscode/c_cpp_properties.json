@@ -28,6 +28,7 @@
                 "C:\\Users\\silent\\AppData\\Local\\Arduino15\\packages\\arduino\\hardware\\avr\\1.8.2\\**",
                 "C:\\Program Files (x86)\\Arduino\\tools\\**",
                 "C:\\Program Files (x86)\\Arduino\\hardware\\arduino\\avr\\**",
+                "C:\\Users\\silent\\Documents\\Arduino\\libraries\\**",
                 "${workspaceRoot}"
             ],
             "browse": {
@@ -35,18 +36,14 @@
                 "path": [
                     "C:\\Program Files (x86)\\Arduino\\tools\\**",
                     "C:\\Program Files (x86)\\Arduino\\hardware\\arduino\\avr\\**",
+                    "C:\\Users\\silent\\Documents\\Arduino\\libraries\\**",
                     "${workspaceRoot}"
                 ]
             },
             "intelliSenseMode": "msvc-x64",
             "compilerArgs": [
                 "-I${workspaceRoot}"
-            ],
-            "logging": {
-                "trace": false,
-                "traceResponse": false,
-                "engineLogging": false
-            }
+            ]
         }
     ],
     "version": 4

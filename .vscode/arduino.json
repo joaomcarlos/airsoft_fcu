@@ -3,5 +3,5 @@
     "output": "c:/build",
     "board": "arduino:avr:leonardo",
     "port": "COM7",
-    "programmer": "AVRISP mkII"
+    "programmer": "AVR ISP"
 }

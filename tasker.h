@@ -8,11 +8,10 @@
 #define _tasker_h
 
 #include "Arduino.h"
-#include "env.h"
 
-//#ifndef TASKER_MAX_TASKS
-//#define TASKER_MAX_TASKS 10 // max 254 entries, one occupies 14 bytes of RAM
-//#endif
+#ifndef TASKER_MAX_TASKS
+#define TASKER_MAX_TASKS 10 // max 254 entries, one occupies 14 bytes of RAM
+#endif
 
 typedef void (*TaskCallback0)(void);
 typedef void (*TaskCallback1)(int);
