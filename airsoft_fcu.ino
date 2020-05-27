@@ -1,6 +1,7 @@
 #include <math.h>
 #include <Pushbutton.h>
 #include <Narcoleptic.h>
+#include <EEPROM.h>
 
 // read https://digistump.com/wiki/digispark/tutorials/basics
 // all pins can output, but pin5 is only 3v
@@ -20,6 +21,34 @@
 #define SCREEN_HEIGHT 64
 #define FONT_SIZE 8
 
+// as discussed here: https://www.facebook.com/groups/WolverineAirsoftSMP/2434754936777579
+
+// engine cycle control
+#define SANE_DWELL 130	   // default 30 or Polarstar:19 // how nozzle takes to fire and move back, to allow BB load
+#define SANE_COOLDOWN 40   // default 50 or Polarstar:12 // how nozzle takes to move forward and seat the BB before next shot
+#define INSANE_DWELL 28	   // default 30 or Polarstar:19 // how nozzle takes to fire and move back, to allow BB load
+#define INSANE_COOLDOWN 19 // default 50 or Polarstar:12 // how nozzle takes to move forward and seat the BB before next shot
+
+// trigger automation
+#define BINARY_TRIGGER_TIME 130			   // less than this long pressed and double tap, more and its single shot only
+#define SINGLE_SUPRESS_TIME 700			   // more than this long pressed and fire once every
+#define SINGLE_SUPRESS_TIME_FRENZY 300	   // as above but in frenzy
+#define SINGLE_SUPRESS_CYCLE 500		   // when in "single suppress" how much time between shots
+#define SINGLE_SUPRESS_CYCLE_IN_FRENZY 200 // as above but in frenzy
+#define FULL_AUTO_TRIGGER_TIME 500		   // more than this long pressed and full auto
+#define FULL_AUTO_TRIGGER_TIME_FRENZY 130  // more than this long pressed and full auto
+#define FRENZY_TIMEOUT 5000				   // double shots activate frenzy for this time amount
+
+// battery saver
+#define LONG_SLEEP_TIME 15 * 60 * 1000 // after 15 minutes, enter long sleep, may take up to 30 seconds to wake up (usually less)
+#define LONG_SLEEP_CYCLE 30 * 1000	   // when in safe for a long period, sleep longer to try and keep the battery from dying
+#define SHORT_SLEEP_CYCLE 1000		   // when in safe, sleep a bit to save power
+
+// fire modes
+#define SAFE 0
+#define SEMI 1
+#define FULL 2
+
 int mode = 2;
 int magazine_size = 130;
 int shots_left = 0;
@@ -27,6 +56,9 @@ bool frenzy = false;
 
 void setup()
 {
+	loadConfig();
+	firing_setup();
+
 	init_display();
 	init_fire_display_logic();
 }
@@ -37,6 +69,73 @@ void loop()
 	if (shots_left == -1)
 		shots_left = magazine_size;
 }
+
+#ifndef SETTINGS
+#define CONFIG_VERSION "ls1" // ID of the settings block
+#define CONFIG_START 32		 // Tell it where to store your config data in EEPROM
+
+struct StoreStruct
+{
+	char version[4]; // This is for mere detection if they are your settings
+
+	// engine cycle control
+	int sane_dwell;
+	int sane_cooldown;
+	int insane_dwell;
+	int insane_cooldown;
+
+	// trigger automation
+	int binary_trigger_time;
+	int single_supress_time;
+	int single_supress_time_frenzy;
+	int single_supress_cycle;
+	int single_supress_cycle_in_frenzy;
+	int full_auto_trigger_time;
+	int full_auto_trigger_time_frenzy;
+	int frenzy_timeout;
+
+	// battery saver
+	int long_sleep_time;
+	int long_sleep_cycle;
+	int short_sleep_cycle;
+} settings = {
+	CONFIG_VERSION,
+	// The default values
+	SANE_DWELL,
+	SANE_COOLDOWN,
+	INSANE_DWELL,
+	INSANE_COOLDOWN,
+	BINARY_TRIGGER_TIME,
+	SINGLE_SUPRESS_TIME,
+	SINGLE_SUPRESS_TIME_FRENZY,
+	SINGLE_SUPRESS_CYCLE,
+	SINGLE_SUPRESS_CYCLE_IN_FRENZY,
+	FULL_AUTO_TRIGGER_TIME,
+	FULL_AUTO_TRIGGER_TIME_FRENZY,
+	FRENZY_TIMEOUT,
+	LONG_SLEEP_TIME,
+	LONG_SLEEP_CYCLE,
+	SHORT_SLEEP_CYCLE,
+};
+
+void loadConfig()
+{
+	// To make sure there are settings, and they are YOURS!
+	// If nothing is found it will use the default settings.
+	if (EEPROM.read(CONFIG_START + 0) == CONFIG_VERSION[0] &&
+		EEPROM.read(CONFIG_START + 1) == CONFIG_VERSION[1] &&
+		EEPROM.read(CONFIG_START + 2) == CONFIG_VERSION[2])
+		for (unsigned int t = 0; t < sizeof(settings); t++)
+			*((char *)&settings + t) = EEPROM.read(CONFIG_START + t);
+}
+
+void saveConfig()
+{
+	for (unsigned int t = 0; t < sizeof(settings); t++)
+		EEPROM.write(CONFIG_START + t, *((char *)&settings + t));
+}
+
+#endif
 
 #ifndef DISPLAY_LOGIC
 
@@ -183,34 +282,6 @@ int calc_y_in_curve(int x)
 
 #ifndef FIRING_LOGIC
 
-// as discussed here: https://www.facebook.com/groups/WolverineAirsoftSMP/2434754936777579
-
-// engine cycle control
-#define sane_dwell 130	   // default 30 or Polarstar:19 // how nozzle takes to fire and move back, to allow BB load
-#define sane_cooldown 40   // default 50 or Polarstar:12 // how nozzle takes to move forward and seat the BB before next shot
-#define insane_dwell 28	   // default 30 or Polarstar:19 // how nozzle takes to fire and move back, to allow BB load
-#define insane_cooldown 19 // default 50 or Polarstar:12 // how nozzle takes to move forward and seat the BB before next shot
-
-// trigger automation
-#define binary_trigger_time 130			   // less than this long pressed and double tap, more and its single shot only
-#define single_supress_time 700			   // more than this long pressed and fire once every
-#define single_supress_time_frenzy 300	   // as above but in frenzy
-#define single_supress_cycle 500		   // when in "single suppress" how much time between shots
-#define single_supress_cycle_in_frenzy 200 // as above but in frenzy
-#define full_auto_trigger_time 500		   // more than this long pressed and full auto
-#define full_auto_trigger_time_frenzy 130  // more than this long pressed and full auto
-#define frenzy_timeout 5000				   // double shots activate frenzy for this time amount
-
-// battery saver
-#define long_sleep_time 15 * 60 * 1000 // after 15 minutes, enter long sleep, may take up to 30 seconds to wake up (usually less)
-#define long_sleep_cycle 30 * 1000	   // when in safe for a long period, sleep longer to try and keep the battery from dying
-#define short_sleep_cycle 1000		   // when in safe, sleep a bit to save power
-
-// fire modes
-#define SAFE 0
-#define SEMI 1
-#define FULL 2
-
 Pushbutton trigger_btn(trigger_pin);
 Pushbutton safe_btn(safe_pin);
 Pushbutton full_btn(full_pin);
@@ -228,10 +299,10 @@ void firing_loop()
 	mode = get_firing_mode();
 	if (mode == SAFE)
 	{
-		if (millis() - lastNonSleepCycle > long_sleep_time)
-			Narcoleptic.delay(long_sleep_time); // During this time power consumption is minimised
+		if (millis() - lastNonSleepCycle > settings.long_sleep_time)
+			Narcoleptic.delay(settings.long_sleep_time); // During this time power consumption is minimised
 		else
-			Narcoleptic.delay(short_sleep_cycle); // During this time power consumption is minimised
+			Narcoleptic.delay(settings.short_sleep_cycle); // During this time power consumption is minimised
 		return;
 	}
 
@@ -240,7 +311,7 @@ void firing_loop()
 	if (!trigger_btn.isPressed())
 		return;
 
-	if (millis() - lastTriggerPress > frenzy_timeout)
+	if (millis() - lastTriggerPress > settings.frenzy_timeout)
 		frenzy = false;
 
 	lastTriggerPress = millis();
@@ -260,9 +331,9 @@ void firing_loop()
 void fire_once()
 {
 	digitalWrite(fire_pin, HIGH);
-	delay((mode == FULL) ? insane_dwell : sane_dwell);
+	delay((mode == FULL) ? settings.insane_dwell : settings.sane_dwell);
 	digitalWrite(fire_pin, LOW);
-	delay((mode == FULL) ? insane_cooldown : sane_cooldown);
+	delay((mode == FULL) ? settings.insane_cooldown : settings.sane_cooldown);
 }
 
 // 0-SAFE, 1-SEMI, 2-FULL
@@ -290,18 +361,18 @@ void perform_semi_logic()
 	// check if its a long press
 	while (trigger_btn.isPressed())
 	{
-		if (millis() - lastTriggerPress >= single_supress_time)
+		if (millis() - lastTriggerPress >= settings.single_supress_time)
 		{
 			// cycle it
 			digitalWrite(fire_pin, LOW);
-			delay(sane_cooldown);
+			delay(settings.sane_cooldown);
 
 			// if its a long press, enter "single suppress" mode
 			while (trigger_btn.isPressed())
 			{
 				// fire once every single_supress_cycle
 				fire_once();
-				delay(single_supress_cycle);
+				delay(settings.single_supress_cycle);
 			}
 			return; // return ealier to avoid extra binary trigger shot
 		}
@@ -309,15 +380,15 @@ void perform_semi_logic()
 
 	long pull_time = millis() - lastTriggerPress;
 	// binary trigger
-	if (pull_time <= binary_trigger_time)
+	if (pull_time <= settings.binary_trigger_time)
 	{
 		// wait at least the minimum dwell to cycle properly
-		if (pull_time < insane_dwell)
-			delay(insane_dwell - pull_time);
+		if (pull_time < settings.insane_dwell)
+			delay(settings.insane_dwell - pull_time);
 
 		// reset the shot and wait for cooldown
 		digitalWrite(fire_pin, LOW);
-		delay(insane_cooldown);
+		delay(settings.insane_cooldown);
 
 		frenzy = true;
 		fire_once();
@@ -327,46 +398,46 @@ void perform_semi_logic()
 	// normal shot release...
 
 	// wait at least the minimum dwell to cycle properly
-	if (pull_time < sane_dwell)
-		delay(sane_dwell - pull_time);
+	if (pull_time < settings.sane_dwell)
+		delay(settings.sane_dwell - pull_time);
 
 	// complete the cycle
 	digitalWrite(fire_pin, LOW);
-	delay(sane_cooldown);
+	delay(settings.sane_cooldown);
 }
 
 void perform_semi_logic_frenzy()
 {
 	digitalWrite(fire_pin, HIGH);
-	delay(sane_dwell);
+	delay(settings.sane_dwell);
 	digitalWrite(fire_pin, LOW);
-	delay(insane_cooldown); // take advantage to start cooling down asap
+	delay(settings.insane_cooldown); // take advantage to start cooling down asap
 
 	// check if its a long press
 	while (trigger_btn.isPressed())
 	{
-		if (millis() - lastTriggerPress >= single_supress_time_frenzy)
+		if (millis() - lastTriggerPress >= settings.single_supress_time_frenzy)
 		{
 			// if its a long press, enter "single suppress" mode
 			while (trigger_btn.isPressed())
 			{
 				// fire once every single_supress_cycle
 				digitalWrite(fire_pin, HIGH);
-				delay(sane_dwell);
+				delay(settings.sane_dwell);
 				digitalWrite(fire_pin, LOW);
-				delay(single_supress_cycle_in_frenzy);
+				delay(settings.single_supress_cycle_in_frenzy);
 			}
 			return; // return ealier to avoid extra binary trigger shot
 		}
 	}
 
 	// binary trigger assist
-	if (millis() - lastTriggerPress <= binary_trigger_time)
+	if (millis() - lastTriggerPress <= settings.binary_trigger_time)
 	{
 		digitalWrite(fire_pin, HIGH);
-		delay(sane_dwell);
+		delay(settings.sane_dwell);
 		digitalWrite(fire_pin, LOW);
-		delay(sane_cooldown); // its fine since our human trigger cant match
+		delay(settings.sane_cooldown); // its fine since our human trigger cant match
 	}
 }
 
@@ -388,7 +459,7 @@ void perform_full_auto_logic()
 	while (trigger_btn.isPressed())
 	{
 		delay(10);
-		if (millis() - lastTriggerPress >= full_auto_trigger_time_frenzy)
+		if (millis() - lastTriggerPress >= settings.full_auto_trigger_time_frenzy)
 		{
 			// if its a long press, enter "full auto" mode
 			while (trigger_btn.isPressed())
@@ -411,7 +482,7 @@ void perform_full_auto_logic_frenzy()
 	while (trigger_btn.isPressed())
 	{
 		delay(10);
-		if (millis() - lastTriggerPress >= full_auto_trigger_time)
+		if (millis() - lastTriggerPress >= settings.full_auto_trigger_time)
 		{
 			// if its a long press, enter "full auto" mode
 			while (trigger_btn.isPressed())
