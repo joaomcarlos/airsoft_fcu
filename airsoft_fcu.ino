@@ -4,6 +4,14 @@
 #include <Narcoleptic.h>
 #include <EEPROM.h>
 
+
+//#include <SPI.h>
+//#include <Wire.h>
+//#include <Adafruit_GFX.h>
+//#include <Adafruit_SSD1306.h>
+
+//Adafruit_SSD1306 display(128, 32, &Wire, -1);
+
 // read https://digistump.com/wiki/digispark/tutorials/basics
 // all pins can output, but pin5 is only 3v
 // all pins can input, but if you need pullup registor, nullify the internal led
@@ -171,6 +179,21 @@ void perform_draw_call()
 void set_draw_callback(DrawCallback cb)
 {
 	currentDrawCall = cb;
+}
+
+void clear()
+{
+	display.clear();
+}
+
+void clear_and_reset()
+{
+	clear();
+}
+
+void display_text(String text, int size, bool selected, int x, int y)
+{
+	display.printFixedN(x, y, text.c_str(), STYLE_NORMAL, 1);
 }
 
 #endif
@@ -568,7 +591,7 @@ bool display_menu_acelarometro()
 bool drawMenu(String title, String options)
 {
 	update_menu();
-	
+
 	// save energy by short circuiting
 	if (menu_changed)
 	{
@@ -649,11 +672,11 @@ void handle_menu_action()
 			change_menu(MENU_OPCOES_ACELAROMETRO_ACTUAL);
 			break;
 		case 1:
-			calibrate();
+			//calibrate();
 			change_menu(MENU_OPCOES_ROOT);
 			break;
 		case 2:
-			reset_calibration();
+			//reset_calibration();
 			change_menu(MENU_OPCOES_ROOT);
 			break;
 
@@ -683,7 +706,7 @@ void handle_menu_screen_logic()
 		}
 		if (menu_opt == 0)
 		{
-			set_draw_callback(display_accel);
+			//set_draw_callback(display_accel);
 		}
 		break;
 	case MENU_OPCOES_PRINCIPAL:
@@ -693,7 +716,7 @@ void handle_menu_screen_logic()
 		set_draw_callback(display_menu_acelarometro);
 		break;
 	case MENU_OPCOES_ACELAROMETRO_ACTUAL:
-		set_draw_callback(display_calibration);
+		//set_draw_callback(display_calibration);
 		break;
 
 	default:
