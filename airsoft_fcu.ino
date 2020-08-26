@@ -4,7 +4,6 @@
 #include <Narcoleptic.h>
 #include <EEPROM.h>
 
-
 //#include <SPI.h>
 //#include <Wire.h>
 //#include <Adafruit_GFX.h>
@@ -63,20 +62,49 @@ int magazine_size = 130;
 int shots_left = 0;
 bool frenzy = false;
 
+unsigned long last_draw_call_run_time;
+
 void setup()
 {
+	Serial.begin(9600);
+	Serial.println("Starting..");
+	saveConfig();
 	loadConfig();
-	firing_setup();
-
 	init_display();
+	firing_setup();
 	init_fire_display_logic();
 }
+
 void loop()
 {
+	firing_loop();
 	perform_draw_call();
-	shots_left--;
-	if (shots_left == -1)
+	//shots_left--;
+	if (shots_left <= -1)
 		shots_left = magazine_size;
+}
+
+void cooperative_delay(int milliseconds)
+{
+	int initial_milliseconds = milliseconds;
+	if (last_draw_call_run_time == 0)
+		last_draw_call_run_time = 14; // minimum I have seen
+
+	if (milliseconds > last_draw_call_run_time)
+	{
+		perform_draw_call();
+		milliseconds -= last_draw_call_run_time;
+		if (milliseconds < 0)
+			milliseconds = 0;
+	}
+	delay(milliseconds);
+	if (Serial)
+	{
+		Serial.print("Initial requested delay: ");
+		Serial.println(initial_milliseconds);
+		Serial.print("Actual delay: ");
+		Serial.println(milliseconds);
+	}
 }
 
 #ifndef SETTINGS
@@ -168,16 +196,29 @@ void init_display()
 	set_draw_callback(draw_fire_system_status);
 }
 
+unsigned long time;
 void perform_draw_call()
 {
 	if (currentDrawCall)
 	{
-		currentDrawCall();
+		time = millis();
+		if (currentDrawCall())
+		{
+			last_draw_call_run_time = millis() - time;
+			if (Serial)
+			{
+				Serial.print("drawCall Took: ");
+				Serial.print(last_draw_call_run_time);
+				Serial.println(" ms");
+			}
+		}
 	}
 }
 
 void set_draw_callback(DrawCallback cb)
 {
+	display.clear();
+	display.fill(0x00);
 	currentDrawCall = cb;
 }
 
@@ -207,6 +248,7 @@ void display_text(String text, int size, bool selected, int x, int y)
 
 const char *fire_mode_text[] = {"SAFE", "SINGLE", "FULL"};
 bool fire_control_display_needs_redraw = true;
+bool fire_control_display_did_redraw = false;
 int old_mode = -1;
 int old_shots_left = -1;
 
@@ -217,10 +259,12 @@ void init_fire_display_logic()
 
 bool draw_fire_system_status()
 {
+	fire_control_display_did_redraw = false;
 	if (fire_control_display_needs_redraw || mode != old_mode)
 	{
 		display.printFixedN(0, 0, fire_mode_text[mode], STYLE_NORMAL, 0);
 		old_mode = mode;
+		fire_control_display_did_redraw = true;
 	}
 
 	if (fire_control_display_needs_redraw || shots_left != old_shots_left)
@@ -228,9 +272,10 @@ bool draw_fire_system_status()
 		print_shot_counter();
 		draw_progress_bar();
 		old_shots_left = shots_left;
+		fire_control_display_did_redraw = true;
 	}
 	fire_control_display_needs_redraw = false;
-	return true;
+	return fire_control_display_did_redraw;
 }
 
 void print_shot_counter()
@@ -309,11 +354,13 @@ int calc_y_in_curve(int x)
 Pushbutton trigger_btn(trigger_pin);
 Pushbutton safe_btn(safe_pin);
 Pushbutton full_btn(full_pin);
+int get_firing_mode();
+
 void firing_setup()
 {
 	pinMode(fire_pin, OUTPUT);
 	digitalWrite(fire_pin, LOW); // keep it low
-	setup_power_saving();
+								 //setup_power_saving();
 }
 
 long lastNonSleepCycle = 0;
@@ -355,9 +402,10 @@ void firing_loop()
 void fire_once()
 {
 	digitalWrite(fire_pin, HIGH);
-	delay((mode == FULL) ? settings.insane_dwell : settings.sane_dwell);
+	shots_left--;
+	cooperative_delay((mode == FULL) ? settings.insane_dwell : settings.sane_dwell);
 	digitalWrite(fire_pin, LOW);
-	delay((mode == FULL) ? settings.insane_cooldown : settings.sane_cooldown);
+	cooperative_delay((mode == FULL) ? settings.insane_cooldown : settings.sane_cooldown);
 }
 
 // 0-SAFE, 1-SEMI, 2-FULL
@@ -381,6 +429,7 @@ void perform_semi_logic()
 
 	// by doing it this way, we can quickly short circuit and get a faster shot
 	digitalWrite(fire_pin, HIGH);
+	shots_left--;
 
 	// check if its a long press
 	while (trigger_btn.isPressed())
@@ -389,14 +438,14 @@ void perform_semi_logic()
 		{
 			// cycle it
 			digitalWrite(fire_pin, LOW);
-			delay(settings.sane_cooldown);
+			cooperative_delay(settings.sane_cooldown);
 
 			// if its a long press, enter "single suppress" mode
 			while (trigger_btn.isPressed())
 			{
 				// fire once every single_supress_cycle
 				fire_once();
-				delay(settings.single_supress_cycle);
+				cooperative_delay(settings.single_supress_cycle);
 			}
 			return; // return ealier to avoid extra binary trigger shot
 		}
@@ -408,11 +457,11 @@ void perform_semi_logic()
 	{
 		// wait at least the minimum dwell to cycle properly
 		if (pull_time < settings.insane_dwell)
-			delay(settings.insane_dwell - pull_time);
+			cooperative_delay(settings.insane_dwell - pull_time);
 
 		// reset the shot and wait for cooldown
 		digitalWrite(fire_pin, LOW);
-		delay(settings.insane_cooldown);
+		cooperative_delay(settings.insane_cooldown);
 
 		frenzy = true;
 		fire_once();
@@ -423,19 +472,20 @@ void perform_semi_logic()
 
 	// wait at least the minimum dwell to cycle properly
 	if (pull_time < settings.sane_dwell)
-		delay(settings.sane_dwell - pull_time);
+		cooperative_delay(settings.sane_dwell - pull_time);
 
 	// complete the cycle
 	digitalWrite(fire_pin, LOW);
-	delay(settings.sane_cooldown);
+	cooperative_delay(settings.sane_cooldown);
 }
 
 void perform_semi_logic_frenzy()
 {
 	digitalWrite(fire_pin, HIGH);
-	delay(settings.sane_dwell);
+	shots_left--;
+	cooperative_delay(settings.sane_dwell);
 	digitalWrite(fire_pin, LOW);
-	delay(settings.insane_cooldown); // take advantage to start cooling down asap
+	cooperative_delay(settings.insane_cooldown); // take advantage to start cooling down asap
 
 	// check if its a long press
 	while (trigger_btn.isPressed())
@@ -447,9 +497,10 @@ void perform_semi_logic_frenzy()
 			{
 				// fire once every single_supress_cycle
 				digitalWrite(fire_pin, HIGH);
-				delay(settings.sane_dwell);
+				shots_left--;
+				cooperative_delay(settings.sane_dwell);
 				digitalWrite(fire_pin, LOW);
-				delay(settings.single_supress_cycle_in_frenzy);
+				cooperative_delay(settings.single_supress_cycle_in_frenzy);
 			}
 			return; // return ealier to avoid extra binary trigger shot
 		}
@@ -459,9 +510,10 @@ void perform_semi_logic_frenzy()
 	if (millis() - lastTriggerPress <= settings.binary_trigger_time)
 	{
 		digitalWrite(fire_pin, HIGH);
-		delay(settings.sane_dwell);
+		shots_left--;
+		cooperative_delay(settings.sane_dwell);
 		digitalWrite(fire_pin, LOW);
-		delay(settings.sane_cooldown); // its fine since our human trigger cant match
+		cooperative_delay(settings.sane_cooldown); // its fine since our human trigger cant match
 	}
 }
 
@@ -482,7 +534,7 @@ void perform_full_auto_logic()
 	// check if its a long press
 	while (trigger_btn.isPressed())
 	{
-		delay(10);
+		cooperative_delay(10);
 		if (millis() - lastTriggerPress >= settings.full_auto_trigger_time_frenzy)
 		{
 			// if its a long press, enter "full auto" mode
@@ -505,7 +557,7 @@ void perform_full_auto_logic_frenzy()
 	// check if its a long press
 	while (trigger_btn.isPressed())
 	{
-		delay(10);
+		cooperative_delay(10);
 		if (millis() - lastTriggerPress >= settings.full_auto_trigger_time)
 		{
 			// if its a long press, enter "full auto" mode
@@ -728,7 +780,7 @@ void handle_menu_screen_logic()
 
 void setup_power_saving()
 {
-	// Narcoleptic.disableMillis(); Do not disable millis - we need it for our delay() function.
+	// Narcoleptic.disableMillis(); Do not disable millis - we need it for our cooperative_delay() function.
 	//Narcoleptic.disableTimer1();
 	Narcoleptic.disableTimer2();
 	Narcoleptic.disableSerial();
