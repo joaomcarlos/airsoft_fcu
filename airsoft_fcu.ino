@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <math.h>
 #include <Pushbutton.h>
-#include <Narcoleptic.h>
+//#include <Narcoleptic.h>
 #include <EEPROM.h>
 
 //#include <SPI.h>
@@ -16,7 +16,7 @@
 // all pins can input, but if you need pullup registor, nullify the internal led
 // pins 3 and 4 are usb pins and have internal 1.5k ohm resistor, need to overpower it to pulldown
 
-#define fire_pin 38	  // output
+#define fire_pin 20	  // output
 #define trigger_pin 9 // input
 #define safe_pin 7	  // input
 #define full_pin 15	  // input
@@ -370,10 +370,13 @@ void firing_loop()
 	mode = get_firing_mode();
 	if (mode == SAFE)
 	{
-		if (millis() - lastNonSleepCycle > settings.long_sleep_time)
-			Narcoleptic.delay(settings.long_sleep_time); // During this time power consumption is minimised
-		else
-			Narcoleptic.delay(settings.short_sleep_cycle); // During this time power consumption is minimised
+		if (millis() - lastNonSleepCycle > settings.long_sleep_time){
+			//Narcoleptic.delay(settings.long_sleep_time); // During this time power consumption is minimised
+		delay(settings.long_sleep_time);
+		}else{
+			//Narcoleptic.delay(settings.short_sleep_cycle); // During this time power consumption is minimised
+		  delay(settings.short_sleep_cycle);
+		}
 		return;
 	}
 
@@ -782,11 +785,11 @@ void setup_power_saving()
 {
 	// Narcoleptic.disableMillis(); Do not disable millis - we need it for our cooperative_delay() function.
 	//Narcoleptic.disableTimer1();
-	Narcoleptic.disableTimer2();
-	Narcoleptic.disableSerial();
-	Narcoleptic.disableADC(); // !!! enabling this causes >100uA consumption !!!
-	Narcoleptic.disableWire();
-	Narcoleptic.disableSPI();
+//	Narcoleptic.disableTimer2();
+	//Narcoleptic.disableSerial();
+	//Narcoleptic.disableADC(); // !!! enabling this causes >100uA consumption !!!
+	//Narcoleptic.disableWire();
+	//Narcoleptic.disableSPI();
 
 	// Another tweaks to lower the power consumption
 	ADCSRA &= ~(1 << ADEN); //Disable ADC
