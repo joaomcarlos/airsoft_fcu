@@ -34,7 +34,7 @@
 // as discussed here: https://www.facebook.com/groups/WolverineAirsoftSMP/2434754936777579
 
 // engine cycle control
-#define SANE_DWELL 130	   // default 30 or Polarstar:19 // how nozzle takes to fire and move back, to allow BB load
+#define SANE_DWELL 60	   // default 30 or Polarstar:19 // how nozzle takes to fire and move back, to allow BB load
 #define SANE_COOLDOWN 40   // default 50 or Polarstar:12 // how nozzle takes to move forward and seat the BB before next shot
 #define INSANE_DWELL 28	   // default 30 or Polarstar:19 // how nozzle takes to fire and move back, to allow BB load
 #define INSANE_COOLDOWN 19 // default 50 or Polarstar:12 // how nozzle takes to move forward and seat the BB before next shot
@@ -62,6 +62,7 @@
 int mode = 2;
 int magazine_size = 130;
 int shots_left = 0;
+bool is_mag_in = false;
 bool frenzy = false;
 
 unsigned long last_draw_call_run_time;
@@ -77,13 +78,36 @@ void setup()
 	init_fire_display_logic();
 }
 
+bool printed_settings = false;
 void loop()
 {
-	firing_loop();
-	perform_draw_call();
-	//shots_left--;
 	if (shots_left <= -1)
 		shots_left = magazine_size;
+
+	firing_loop();
+	perform_draw_call();
+
+	if (Serial && !printed_settings)
+	{
+		printed_settings = true;
+		printSettings();
+	}
+}
+
+void log(String text)
+{
+	if (Serial)
+		Serial.println(text);
+}
+
+void logKV(String key, int value)
+{
+	if (Serial)
+	{
+		Serial.print(key);
+		Serial.print(": ");
+		Serial.println(value);
+	}
 }
 
 void cooperative_delay(int milliseconds)
@@ -102,10 +126,8 @@ void cooperative_delay(int milliseconds)
 	delay(milliseconds);
 	if (Serial)
 	{
-		Serial.print("Initial requested delay: ");
-		Serial.println(initial_milliseconds);
-		Serial.print("Actual delay: ");
-		Serial.println(milliseconds);
+		logKV("Initial requested delay", initial_milliseconds);
+		logKV("Actual delay", milliseconds);
 	}
 }
 
@@ -172,6 +194,43 @@ void saveConfig()
 {
 	for (unsigned int t = 0; t < sizeof(settings); t++)
 		EEPROM.write(CONFIG_START + t, *((char *)&settings + t));
+}
+
+void printSetting(String key, int value)
+{
+	logKV(key, value);
+}
+void printSettings()
+{
+	if (!Serial)
+		return;
+
+	Serial.println("---- Settings printout ----");
+	Serial.println("---- Settings printout ----");
+	Serial.println("---- Settings printout ----");
+	Serial.println("");
+	Serial.println("");
+
+	Serial.println("---- engine cycle control ----");
+	printSetting("sane_dwell", settings.sane_dwell);
+	printSetting("sane_cooldown", settings.sane_cooldown);
+	printSetting("insane_dwell", settings.insane_dwell);
+	printSetting("insane_cooldown", settings.insane_cooldown);
+
+	Serial.println("---- trigger automation ----");
+	printSetting("binary_trigger_time", settings.binary_trigger_time);
+	printSetting("single_supress_time", settings.single_supress_time);
+	printSetting("single_supress_time_frenzy", settings.single_supress_time_frenzy);
+	printSetting("single_supress_cycle", settings.single_supress_cycle);
+	printSetting("single_supress_cycle_in_frenzy", settings.single_supress_cycle_in_frenzy);
+	printSetting("full_auto_trigger_time", settings.full_auto_trigger_time);
+	printSetting("full_auto_trigger_time_frenzy", settings.full_auto_trigger_time_frenzy);
+	printSetting("frenzy_timeout", settings.frenzy_timeout);
+
+	Serial.println("---- battery saver ----");
+	printSetting("long_sleep_time", settings.long_sleep_time);
+	printSetting("long_sleep_cycle", settings.long_sleep_cycle);
+	printSetting("short_sleep_cycle", settings.short_sleep_cycle);
 }
 
 #endif
@@ -249,6 +308,7 @@ void display_text(String text, int size, bool selected, int x, int y)
 const char *fire_mode_text[] = {"SAFE", "SINGLE", "FULL"};
 bool fire_control_display_needs_redraw = true;
 bool fire_control_display_did_redraw = false;
+bool was_mag_in = false;
 int old_mode = -1;
 int old_shots_left = -1;
 
@@ -262,9 +322,19 @@ bool draw_fire_system_status()
 	fire_control_display_did_redraw = false;
 	if (fire_control_display_needs_redraw || mode != old_mode)
 	{
+		display.printFixedN(0, 0, "       ", STYLE_NORMAL, 0);
 		display.printFixedN(0, 0, fire_mode_text[mode], STYLE_NORMAL, 0);
 		old_mode = mode;
 		fire_control_display_did_redraw = true;
+	}
+	if (fire_control_display_needs_redraw || is_mag_in != was_mag_in)
+	{
+		display.printFixedN(86, 0, "       ", STYLE_NORMAL, 0);
+		if (is_mag_in)
+			display.printFixedN(86, 0, "Mag in!", STYLE_NORMAL, 0);
+		was_mag_in = is_mag_in;
+		fire_control_display_did_redraw = true;
+		shots_left = (is_mag_in) ? magazine_size : 0;
 	}
 
 	if (fire_control_display_needs_redraw || shots_left != old_shots_left)
@@ -288,6 +358,8 @@ void print_shot_counter()
 	display.positiveMode();
 	sprintf(ammoCount, "%03u", shots_left);
 
+	if (shots_left == magazine_size)
+		display.printFixedN(0, shots_left_margin_top, "     ", STYLE_BOLD, 2);
 	display.printFixedN(0, shots_left_margin_top, ammoCount, STYLE_BOLD, 2);
 }
 
@@ -354,6 +426,7 @@ int calc_y_in_curve(int x)
 Pushbutton trigger_btn(trigger_pin);
 Pushbutton safe_btn(safe_pin);
 Pushbutton full_btn(full_pin);
+Pushbutton mag_btn(mag_detection_pin);
 int get_firing_mode();
 
 void firing_setup()
@@ -367,6 +440,7 @@ long lastNonSleepCycle = 0;
 long lastTriggerPress = 0;
 void firing_loop()
 {
+	is_mag_in = mag_btn.isPressed();
 	mode = get_firing_mode();
 	if (mode == SAFE)
 	{
