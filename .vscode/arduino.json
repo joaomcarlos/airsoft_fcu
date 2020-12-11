@@ -1,7 +1,7 @@
 {
     "sketch": "airsoft_fcu.ino",
-    "output": "c:/build",
+    "output": "../build",
     "board": "arduino:avr:leonardo",
-    "port": "COM4",
+    "port": "/dev/ttyACM0",
     "programmer": "AVRISP mkII"
 }

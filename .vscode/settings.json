@@ -1,13 +1,21 @@
 {
-    "files.associations": {
-        "wire.h": "c",
-        "spi.h": "c"
-    },
-    "arduino.additionalUrls": "",
-    "arduino.logLevel": "info",
-    "arduino.enableUSBDetection": true,
-    "C_Cpp.intelliSenseEngineFallback": "Disabled",
-    "C_Cpp.intelliSenseEngine": "Tag Parser",
-    "editor.formatOnSave": true,
-    "editor.formatOnType": true
+  "files.associations": {
+    "wire.h": "c",
+    "spi.h": "c",
+    "*.tcc": "cpp",
+    "deque": "cpp",
+    "list": "cpp",
+    "string": "cpp",
+    "unordered_map": "cpp",
+    "unordered_set": "cpp",
+    "vector": "cpp",
+    "system_error": "cpp"
+  },
+  "arduino.additionalUrls": "",
+  "arduino.logLevel": "info",
+  "arduino.enableUSBDetection": true,
+  "C_Cpp.intelliSenseEngineFallback": "Disabled",
+  "C_Cpp.intelliSenseEngine": "Tag Parser",
+  "editor.formatOnSave": true,
+  "editor.formatOnType": true
 }
