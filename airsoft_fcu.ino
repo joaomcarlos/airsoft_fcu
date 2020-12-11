@@ -58,7 +58,7 @@
 #define FULL 2
 
 int mode = 2;
-int magazine_size = 130;
+int magazine_size = 150; // PTS EPM
 int shots_left = 0;
 bool frenzy = false;
 
@@ -578,12 +578,17 @@ void perform_full_auto_logic_frenzy()
 
 #define MENU_OPCOES_ROOT -1
 
+// Trigger; Mag; Engine; Selector; Battery
 #define MENU_OPCOES_PRINCIPAL 1
-#define MENU_OPCOES_ACELAROMETRO 2
+#define MENU_OPCOES_TRIGGER 2
+#define MENU_OPCOES_MAG 3
+#define MENU_OPCOES_ENGINE 4
+#define MENU_OPCOES_SELECTOR 5
+#define MENU_OPCOES_BATTERY 6
 
-#define MENU_OPCOES_ACELAROMETRO_ACTUAL 21
-#define MENU_OPCOES_ACELAROMETRO_ALINHAR 22
-#define MENU_OPCOES_ACELAROMETRO_ZERAR_CALIBRACAO 23
+#define MENU_OPCOES_TRIGGER_BINARY_TIME 21
+#define MENU_OPCOES_TRIGGER_SINGLE_SUPPRESS 22
+#define MENU_OPCOES_TRIGGER_BINARY_TIME 23
 
 Pushbutton down_btn(down_btn_pin);
 Pushbutton up_btn(up_btn_pin);
@@ -632,7 +637,7 @@ void update_menu()
 
 bool display_menu_principal()
 {
-	return drawMenu("Menu Principal", "Acelarometro;Option2;Option3;Option4;Option5;Option6;Option7;Option8");
+	return drawMenu("Menu Principal", "Trigger;Mag;Engine;Selector;Battery");
 }
 
 bool display_menu_acelarometro()
