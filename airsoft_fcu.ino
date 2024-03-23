@@ -2,6 +2,7 @@
 #include <math.h>
 #include <Pushbutton.h>
 #include "lcdgfx.h"
+
 //#include <Narcoleptic.h>
 #include <EEPROM.h>
 
@@ -17,15 +18,18 @@
 // all pins can input, but if you need pullup registor, nullify the internal led
 // pins 3 and 4 are usb pins and have internal 1.5k ohm resistor, need to overpower it to pulldown
 
-#define fire_pin 20			// output
-#define trigger_pin 9		// input
-#define safe_pin 7			// input
-#define full_pin 15			// input
-#define mag_detection_pin 5 // input
+// TODO: https://www.youtube.com/watch?v=EDGfJUg8DOo
+// update the graphics lib to this faster one (OneBitDisplay)
 
-#define down_btn_pin 10 // input
-#define up_btn_pin 16	// input
-#define sel_btn_pin 14	// input
+#define fire_pin 20			// output - A2
+#define trigger_pin 9		// input  - A9
+#define safe_pin 7			// input  - 7
+#define full_pin 15			// input  - 15
+#define mag_detection_pin 5 // input  - 5
+
+#define down_btn_pin 10 // input      - A10
+#define up_btn_pin 16	// input      - 16
+#define sel_btn_pin 14	// input      - 14
 
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
